@@ -1,0 +1,13 @@
+.toolbar-icon-important {
+    &:hover {
+        transition: background-color 0.3s;
+        background: red;
+    }
+}
+
+.toolbar-icon {
+    &:hover {
+        transition: background-color 0.3s;
+        background: var(--c1);
+    }
+}
