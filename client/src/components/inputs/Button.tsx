@@ -1,3 +1,4 @@
+import { Motion } from "@motionone/solid"
 import { Component, JSX } from "solid-js"
 import "./Inputs.scss"
 
@@ -9,6 +10,7 @@ export enum ButtonType {
 type Props = {
     type: ButtonType,
     children?: JSX.Element,
+    onClick?: JSX.EventHandlerUnion<HTMLButtonElement, MouseEvent>,
 }
 
 const Button: Component<Props> = (props) => {
@@ -26,9 +28,15 @@ const Button: Component<Props> = (props) => {
     }
 
     return (
-        <button class={`w-[8.5rem] h-10 bg-[var(${colours.backgroundClass})] rounded-lg focus-shadow hover-shadow`}>
+        <Motion.button
+            class={`w-[8.5rem] h-10 rounded-lg focus-shadow hover-shadow`}
+            style={{ "background-color": `var(${colours.backgroundClass})` }}
+            press={{ scale: 0.95 }}
+            transition={{ duration: 0.3 }}
+            onClick={props.onClick}
+        >
             {props.children}
-        </button>
+        </Motion.button>
     )
 }
 
