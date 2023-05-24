@@ -1,4 +1,5 @@
 import { useNavigate } from "@solidjs/router";
+import { invoke } from "@tauri-apps/api";
 import { Component } from "solid-js";
 import Logo from "../../assets/Logo";
 import Button, { ButtonType } from "../../components/inputs/Button";
@@ -25,10 +26,15 @@ const Register: Component = () => {
             <InputField name="password" type="password" placeholder="password" onChange={handleChange} />
             <InputField name="cpassword" type="password" placeholder="confirm password" onChange={handleChange} />
             <div class="flex flex-row w-72 items-center justify-between">
-                <Button type={ButtonType.STANDOUT}>
+                <Button type={ButtonType.STANDOUT} onClick={async () => {
+                    console.log(clientInfo)
+                    let result = await invoke("register_user", { payload: clientInfo })
+
+                    console.log(result)
+                }}>
                     <p class="text-white">Register</p>
                 </Button>
-                <Button type={ButtonType.BACKING} onClick={() => {navigate("/login")}}>
+                <Button type={ButtonType.BACKING} onClick={() => { navigate("/login") }}>
                     <p class="text-black">Go back</p>
                 </Button>
             </div>

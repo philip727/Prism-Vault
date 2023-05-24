@@ -16,3 +16,7 @@ CREATE TABLE sessions (
 			ON UPDATE CASCADE
 			ON DELETE CASCADE
 );
+
+INSERT INTO users (username, email, password) VALUES ("admin", "admin@gmail.com", "aaaa");
+
+SELECT * FROM users;

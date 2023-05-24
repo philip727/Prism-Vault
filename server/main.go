@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/philp727/warframe-app-server/models/db"
+	"github.com/philp727/warframe-app-server/routes/user"
 )
 
 func main() {
@@ -14,6 +15,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+    user.CreateRoute(app, database)
 
 	log.Fatal(app.Listen(":8080"))
 }

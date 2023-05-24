@@ -18,6 +18,7 @@ const Button: Component<Props> = (props) => {
         backgroundClass: "--g1",
     }
 
+    // Different types of buttons and their colours
     switch (props.type) {
         case ButtonType.BACKING:
             colours.backgroundClass = "--g1";

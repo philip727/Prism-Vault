@@ -1,5 +1,9 @@
 package db
 
+type User interface {
+	GetId() uint32
+}
+
 type SafeUser struct {
 	Id       uint32 `json:"id" gorm:"primaryKey"`
 	Username string `json:"username"`
