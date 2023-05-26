@@ -3,6 +3,7 @@ package usercontroller
 import (
 	"regexp"
 
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Error used when the client payload doesn't meet requirements
@@ -47,4 +48,9 @@ func IsPasswordStrong(pw string) bool {
 	)
 
 	return lengthCheck && uppercaseCheck && lowercaseCheck && numberCheck && specialCharCheck
+}
+
+func comparePasswordToHash(pw string, h string) bool {
+    err := bcrypt.CompareHashAndPassword([]byte(h), []byte(pw))
+    return err == nil
 }

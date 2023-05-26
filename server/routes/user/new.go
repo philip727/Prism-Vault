@@ -2,7 +2,6 @@ package user
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/philp727/warframe-app-server/controllers/usercontroller"
@@ -24,8 +23,6 @@ func newUser(c *fiber.Ctx, dbc *gorm.DB) error {
     if err := c.BodyParser(&payload); err != nil {
         return c.SendStatus(400)
     }
-
-    fmt.Println(payload)
     
     if !validatePayload(payload) {
         return c.Status(400).SendString("Fill in all required fields")

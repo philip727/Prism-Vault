@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use reqwest::header::CONTENT_TYPE;
+use reqwest::{header::CONTENT_TYPE, StatusCode, Response};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value};
 
@@ -12,7 +12,7 @@ pub struct RegisterPayload {
     pub cpassword: String,
 }
 
-// Makes a request with the api to create a user, and sends a certain message back to the frontend
+// Makes a request with the server api to create a user, and sends a certain message back to the frontend
 #[tauri::command]
 pub async fn register_user(payload: RegisterPayload) -> Result<String, String> {
     let client = reqwest::Client::new();
@@ -24,12 +24,16 @@ pub async fn register_user(payload: RegisterPayload) -> Result<String, String> {
         .send()
         .await;
 
-
     if let Err(e) = response {
         return Err(e.to_string());
+    };
+
+    let resp = response.unwrap();
+
+    let status = resp.status();
+    if status != StatusCode::OK {
+        return Err(resp.text().await.unwrap())
     }
 
-    let json = response.unwrap().text().await.unwrap();
-
-    Ok(json)
+    Ok("Succesfully registered".to_string())
  }
