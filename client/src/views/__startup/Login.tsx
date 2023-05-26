@@ -30,7 +30,7 @@ const Login: Component = () => {
         }
 
         createInWindowNotification({
-            text: "Welcome tenno!",
+            text: "Welcome Tenno!",
             lengthInSeconds: 5,
         })
     }
@@ -38,19 +38,25 @@ const Login: Component = () => {
     return (
         <div class="w-screen h-screen flex flex-col justify-center items-center gap-6">
             <Logo />
-            <h1 class="text-4xl text-white font-bold tracking-wider hover:tracking-widest transition-all">Login</h1>
-            <InputField name="identifier" type="text" placeholder="username or email" onChange={handleChange} />
-            <InputField name="password" type="password" placeholder="password" onChange={handleChange} />
-            <div class="flex flex-row w-72 items-center justify-between">
-                <Button type={ButtonType.STANDOUT} onClick={() => {
-                        login();
-                    }}>
-                    <p class="text-white">Login</p>
-                </Button>
-                <Button type={ButtonType.BACKING} onClick={() => {navigate("/register")}}>
-                    <p class="text-black">Sign up</p>
-                </Button>
-            </div>
+            <h1 class="text-4xl text-white text-center font-bold tracking-wider hover:tracking-widest transition-all duration-300">Login</h1>
+            <form 
+                class="flex flex-col justify-center items-center gap-6" 
+                onSubmit={(e) => {
+                    e.preventDefault(); 
+                    login();
+                }}
+            >
+                <InputField name="identifier" type="text" placeholder="username or email" onChange={handleChange} />
+                <InputField name="password" type="password" placeholder="password" onChange={handleChange} />
+                <div class="flex flex-row w-72 items-center justify-between">
+                    <Button colourType={ButtonType.STANDOUT} type="submit">
+                        <p class="text-white">Login</p>
+                    </Button>
+                    <Button colourType={ButtonType.BACKING} onClick={() => { navigate("/register") }}>
+                        <p class="text-black">Sign up</p>
+                    </Button>
+                </div>
+            </form>
         </div>
     )
 }

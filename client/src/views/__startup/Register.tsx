@@ -41,21 +41,27 @@ const Register: Component = () => {
     return (
         <div class="w-screen h-screen flex flex-col justify-center items-center gap-6">
             <Logo />
-            <h1 class="text-4xl text-white font-bold tracking-wider hover:tracking-widest transition-all">Register</h1>
-            <InputField name="username" type="text" placeholder="username" onChange={handleChange} />
-            <InputField name="email" type="email" placeholder="email" onChange={handleChange} />
-            <InputField name="password" type="password" placeholder="password" onChange={handleChange} />
-            <InputField name="cpassword" type="password" placeholder="confirm password" onChange={handleChange} />
-            <div class="flex flex-row w-72 items-center justify-between">
-                <Button type={ButtonType.STANDOUT} onClick={() => {
+            <h1 class="text-4xl text-center text-white font-bold tracking-wider hover:tracking-widest transition-all duration-300">Register</h1>
+            <form
+                class="flex flex-col justify-center items-center gap-6"
+                onSubmit={(e) => {
+                    e.preventDefault();
                     register();
-                }}>
-                    <p class="text-white">Register</p>
-                </Button>
-                <Button type={ButtonType.BACKING} onClick={() => { navigate("/login") }}>
-                    <p class="text-black">Go back</p>
-                </Button>
-            </div>
+                }}
+            >
+                <InputField name="username" type="text" placeholder="username" onChange={handleChange} />
+                <InputField name="email" type="email" placeholder="email" onChange={handleChange} />
+                <InputField name="password" type="password" placeholder="password" onChange={handleChange} />
+                <InputField name="cpassword" type="password" placeholder="confirm password" onChange={handleChange} />
+                <div class="flex flex-row w-72 items-center justify-between">
+                    <Button colourType={ButtonType.STANDOUT} type="submit">
+                        <p class="text-white">Register</p>
+                    </Button>
+                    <Button colourType={ButtonType.BACKING} onClick={() => { navigate("/login") }}>
+                        <p class="text-black">Go back</p>
+                    </Button>
+                </div>
+            </form>
         </div>
     )
 }

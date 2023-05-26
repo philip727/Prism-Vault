@@ -8,7 +8,8 @@ export enum ButtonType {
 }
 
 type Props = {
-    type: ButtonType,
+    colourType: ButtonType,
+    type?: "button" | "reset" | "submit",
     children?: JSX.Element,
     onClick?: JSX.EventHandlerUnion<HTMLButtonElement, MouseEvent>,
 }
@@ -19,7 +20,7 @@ const Button: Component<Props> = (props) => {
     }
 
     // Different types of buttons and their colours
-    switch (props.type) {
+    switch (props.colourType) {
         case ButtonType.BACKING:
             colours.backgroundClass = "--g1";
             break;
@@ -35,6 +36,7 @@ const Button: Component<Props> = (props) => {
             press={{ scale: 0.95 }}
             transition={{ duration: 0.3 }}
             onClick={props.onClick}
+            type={props.type}
         >
             {props.children}
         </Motion.button>
