@@ -12,6 +12,7 @@ fn main() {
             items::direct_item,
             items::search_item,
             user::register_user,
+            user::login_user
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -10,34 +10,38 @@ import (
 	"gorm.io/gorm"
 )
 
-func validateRegisterPayload(p types.NewUserPayload) bool {
-	return len(p.Username) > 0 && len(p.Email) > 0 && len(p.Password) > 0 && len(p.CPassword) > 0
+func validateLoginPayload(p types.LoginPayload) bool {
+	return len(p.Identifier) > 0 && len(p.Password) > 0
 }
 
-// Manages the respones that get sent to the user
-func newUser(c *fiber.Ctx, dbc *gorm.DB) error {
+func loginSession(c *fiber.Ctx, dbc *gorm.DB) error {
 	c.Accepts("application/json")
 
-	var payload types.NewUserPayload
+	var payload types.LoginPayload
 
 	if err := c.BodyParser(&payload); err != nil {
 		return c.SendStatus(400)
 	}
 
-	if !validateRegisterPayload(payload) {
+	if !validateLoginPayload(payload) {
 		return c.Status(400).SendString("Fill in all required fields")
 	}
 
-	if err := usercontroller.InsertUser(dbc, payload); err != nil {
+	if err := usercontroller.MatchInformation(payload, dbc); err != nil {
 		var payloadError *usercontroller.PayloadError
+        var unauthorizedError *usercontroller.UnauthorizedError
 		var existsError *db.ExistsError
 
-		if errors.As(err, &existsError) || errors.As(err, &payloadError) {
+		if errors.As(err, &payloadError) || errors.As(err, &existsError) {
 			return c.Status(400).SendString(err.Error())
+		}
+
+		if errors.As(err, &unauthorizedError) {
+			return c.Status(401).SendString(err.Error())
 		}
 
 		return c.Status(501).SendString(err.Error())
 	}
 
-	return c.SendStatus(200)
+    return c.SendStatus(200)
 }

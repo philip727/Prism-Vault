@@ -2,8 +2,6 @@ package usercontroller
 
 import (
 	"regexp"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 // Error used when the client payload doesn't meet requirements
@@ -12,6 +10,14 @@ type PayloadError struct {
 }
 
 func (e *PayloadError) Error() string {
+    return e.Msg
+}
+
+type UnauthorizedError struct {
+    Msg string
+}
+
+func (e *UnauthorizedError) Error() string {
     return e.Msg
 }
 
@@ -50,7 +56,3 @@ func IsPasswordStrong(pw string) bool {
 	return lengthCheck && uppercaseCheck && lowercaseCheck && numberCheck && specialCharCheck
 }
 
-func comparePasswordToHash(pw string, h string) bool {
-    err := bcrypt.CompareHashAndPassword([]byte(h), []byte(pw))
-    return err == nil
-}

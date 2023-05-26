@@ -21,7 +21,7 @@ const Register: Component = () => {
     }
 
     const register = async () => {
-        let { result, err } = await unwrapPromise<string, string>(invoke("register_user", { payload: clientInfo }));
+        let { err } = await unwrapPromise<string, string>(invoke("register_user", { payload: clientInfo }));
 
         if (err) {
             createInWindowNotification({
@@ -32,14 +32,16 @@ const Register: Component = () => {
         }
 
         createInWindowNotification({
-            text: "Succesfully registered, welcome Tenno!",
+            text: "Successfully registered, welcome Tenno!",
             lengthInSeconds: 5,
         })
+        navigate("/login")
     }
 
     return (
         <div class="w-screen h-screen flex flex-col justify-center items-center gap-6">
             <Logo />
+            <h1 class="text-4xl text-white font-bold tracking-wider hover:tracking-widest transition-all">Register</h1>
             <InputField name="username" type="text" placeholder="username" onChange={handleChange} />
             <InputField name="email" type="email" placeholder="email" onChange={handleChange} />
             <InputField name="password" type="password" placeholder="password" onChange={handleChange} />

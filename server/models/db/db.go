@@ -44,3 +44,19 @@ func ColumnContains(tbl string, col string, val string, dbs *gorm.DB) (error) {
 
     return nil
 }
+
+// Checks if a column in a table, contains a value
+func ColumnExists(tbl string, col string, val string, dbs *gorm.DB) (error) {
+    count := int64(0)
+    result := dbs.Table(tbl).Where(fmt.Sprint(col, " LIKE ?"), val).Count(&count)
+
+    if result.Error != nil {
+        return result.Error
+    }
+
+    if count == 0 {
+        return &ExistsError{Msg: fmt.Sprint(col, ", ", val, " does not exist")}
+    }
+
+    return nil
+}
