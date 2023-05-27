@@ -1,7 +1,7 @@
 use regex::Regex;
 use reqwest::{header::CONTENT_TYPE, StatusCode};
 use serde::{Deserialize, Serialize};
-use serde_json::json;
+use serde_json::{json, Value};
 use std::{path::PathBuf, time::Duration};
 use tauri::{AppHandle, Manager, Wry};
 use tauri_plugin_store::{with_store, StoreCollection};
@@ -18,6 +18,12 @@ pub struct RegisterPayload {
 pub struct LoginPayload {
     pub identifier: String,
     pub password: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct LoginResponse {
+    pub user: Value,
+    pub session_token: String,
 }
 
 fn is_password_strong(password: &str) -> bool {
@@ -72,8 +78,6 @@ pub async fn register_user(payload: RegisterPayload) -> Result<String, String> {
         return Err(e.to_string())
     }
 
-    println!("banana");
-
     let client = reqwest::Client::new();
     let response = client
         .post("http://127.0.0.1:8080/user/new")
@@ -105,7 +109,7 @@ pub async fn register_user(payload: RegisterPayload) -> Result<String, String> {
 
 // Makes a request with the server api to create a user, and sends a certain message back to the frontend
 #[tauri::command]
-pub async fn login_user(app_handle: AppHandle, payload: LoginPayload) -> Result<String, String> {
+pub async fn login_user(app_handle: AppHandle, payload: LoginPayload) -> Result<Value, String> {
     let client = reqwest::Client::new();
     let response = client
         .post("http://127.0.0.1:8080/user/session")
@@ -136,16 +140,16 @@ pub async fn login_user(app_handle: AppHandle, payload: LoginPayload) -> Result<
     let stores = app.state::<StoreCollection<Wry>>();
     let path = PathBuf::from("data/user.data");
 
-    // Session token received in response
-    let session_token = resp.text().await.unwrap();
+    let json = serde_json::from_str::<LoginResponse>(&resp.text().await.unwrap()).unwrap();
 
+    // Session token received in response
     let try_create_key = with_store(app.clone(), stores, path, |store| {
-        store.insert("session".to_string(), json!(session_token));
+        store.insert("session".to_string(), json!(json.session_token));
         store.save()
     });
     if let Err(e) = try_create_key {
         return Err(e.to_string());
     }
 
-    Ok("Successful login".to_string())
+    Ok(json.user)
 }

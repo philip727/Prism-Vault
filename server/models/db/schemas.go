@@ -21,6 +21,14 @@ type UnsafeUser struct {
 	Password string `json:"password"`
 }
 
+func (u UnsafeUser) GetUser() SafeUser {
+    return SafeUser{
+        Id: u.Id,
+        Username: u.Username,
+        Email: u.Email,
+    }
+}
+
 func (u UnsafeUser) GetId() uint32 {
 	return u.Id
 }

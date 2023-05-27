@@ -12,11 +12,13 @@ import (
 	"gorm.io/gorm"
 )
 
+// Compares a string to a hash to see if they match
 func comparePasswordToHash(pw string, h string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(h), []byte(pw))
 	return err == nil
 }
 
+// Searches for a user by a certain column
 func searchUserByCol(idn string, col string, dbc *gorm.DB) db.UnsafeUser {
 	var user db.UnsafeUser
 
@@ -33,6 +35,7 @@ const (
 	USERNAME Identifier = iota
 )
 
+// Matches the string given to a certain identifier
 func matchIdentifier(idn string) Identifier {
 	if IsEmail(idn) {
 		return EMAIL
@@ -45,46 +48,53 @@ func matchIdentifier(idn string) Identifier {
 
 type SessionToken string
 
-// Creates the ssession id from the user details
+// Creates the session token from the user information and current time
 func createSessionToken(u db.UnsafeUser) SessionToken {
 	beforeString := fmt.Sprint(u.Username, u.Id, time.Now().Unix())
 	hash := sha256.Sum256([]byte(beforeString))
-    hashString := hex.EncodeToString(hash[:])
+	hashString := hex.EncodeToString(hash[:])
 
 	return SessionToken(hashString)
 }
 
+// Stores the session token in the database with an expiry date in unix time
 func storeSession(t SessionToken, u db.UnsafeUser, dbc *gorm.DB) error {
 	expiry := time.Now().Add(time.Hour * 24 * 14).Unix() // 14 day expiry date
-    session := &db.Session{UserId: u.Id, Token: string(t), Expiry: expiry}
-    
-    result := dbc.Table("sessions").Where("user_id = ?", u.Id).Omit("id").Updates(&session);
-    if result.Error != nil {
-        return result.Error
-    }
+	session := &db.Session{UserId: u.Id, Token: string(t), Expiry: expiry}
 
-    if result.RowsAffected == 0 {
-        dbc.Table("sessions").Create(&session)
-    }
+	result := dbc.Table("sessions").Where("user_id = ?", u.Id).Omit("id").Updates(&session)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		dbc.Table("sessions").Create(&session)
+	}
 
 	return nil
 }
 
-func MatchInformation(lp types.LoginPayload, dbc *gorm.DB) (SessionToken, error) {
+type LoginReturn struct {
+	User  db.User      `json:"user"`
+	Token SessionToken `json:"session_token"`
+}
+
+// Matches the information in the db with the login data given
+func MatchInformation(lp types.LoginPayload, dbc *gorm.DB) (LoginReturn, error) {
 	var user db.UnsafeUser
-    var sessionToken SessionToken
+	var sessionToken SessionToken
 
 	dbs := dbc.Session(&gorm.Session{})
 
 	switch matchIdentifier(lp.Identifier) {
 	case NONE:
-		return sessionToken, &PayloadError{Msg: "The given identifier is not a username or email"}
+		return LoginReturn{user, sessionToken}, &PayloadError{Msg: "The given identifier is not a username or email"}
 	case EMAIL:
 		// Checks if the user table contains the email
 		err := db.ColumnExists("users", "email", lp.Identifier, dbs)
 
 		if err != nil {
-			return sessionToken, &db.ExistsError{Msg: fmt.Sprint("No user exists with the email, ", lp.Identifier)}
+			return LoginReturn{user, sessionToken}, &db.ExistsError{Msg: fmt.Sprint("No user exists with the email, ", lp.Identifier)}
 		}
 
 		// Finds the user by email
@@ -94,7 +104,7 @@ func MatchInformation(lp types.LoginPayload, dbc *gorm.DB) (SessionToken, error)
 		err := db.ColumnExists("users", "username", lp.Identifier, dbs)
 
 		if err != nil {
-			return sessionToken, &db.ExistsError{Msg: fmt.Sprint("No user exists with the username, ", lp.Identifier)}
+			return LoginReturn{user, sessionToken}, &db.ExistsError{Msg: fmt.Sprint("No user exists with the username, ", lp.Identifier)}
 		}
 
 		// Finds the user by username
@@ -102,13 +112,13 @@ func MatchInformation(lp types.LoginPayload, dbc *gorm.DB) (SessionToken, error)
 	}
 
 	if !comparePasswordToHash(lp.Password, user.Password) {
-		return sessionToken, &UnauthorizedError{Msg: "The password given is incorrect"}
+		return LoginReturn{user, sessionToken}, &UnauthorizedError{Msg: "The password given is incorrect"}
 	}
 
-    sessionToken = createSessionToken(user);
-    if err := storeSession(sessionToken, user, dbs); err != nil {
-        return sessionToken, err
-    }
+	sessionToken = createSessionToken(user)
+	if err := storeSession(sessionToken, user, dbs); err != nil {
+		return LoginReturn{user, sessionToken}, err
+	}
 
-	return sessionToken,  nil
+	return LoginReturn{user.GetUser(), sessionToken}, nil
 }

@@ -19,7 +19,7 @@ const Login: Component = () => {
     }
 
     const login = async () => {
-        let { err } = await unwrapPromise<string, string>(invoke("login_user", { payload: clientInfo }));
+        let { err, result } = await unwrapPromise<string, string>(invoke("login_user", { payload: clientInfo }));
 
         if (err) {
             createInWindowNotification({
@@ -33,16 +33,19 @@ const Login: Component = () => {
             text: "Welcome Tenno!",
             lengthInSeconds: 5,
         })
+
+        navigate("/dashboard");
+        console.log(result);
     }
 
     return (
         <div class="w-screen h-screen flex flex-col justify-center items-center gap-6">
             <Logo />
             <h1 class="text-4xl text-white text-center font-bold tracking-wider hover:tracking-widest transition-all duration-300">Login</h1>
-            <form 
-                class="flex flex-col justify-center items-center gap-6" 
+            <form
+                class="flex flex-col justify-center items-center gap-6"
                 onSubmit={(e) => {
-                    e.preventDefault(); 
+                    e.preventDefault();
                     login();
                 }}
             >

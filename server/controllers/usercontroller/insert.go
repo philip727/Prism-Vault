@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// Hashes the password using bcrypt
 func hashPassword(pw string) (string, error) {
     bytes, err := bcrypt.GenerateFromPassword([]byte(pw), 12)
     return string(bytes), err
