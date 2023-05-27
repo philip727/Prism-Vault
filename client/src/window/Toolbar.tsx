@@ -4,12 +4,15 @@ import { Component, createSignal, onCleanup, onMount } from "solid-js"
 const Toolbar: Component = () => {
     let [focused, setFocused] = createSignal(false);
     let cleanUpFocus: null | Function = null;
+
+    // Updates the focused signal when it's changed
     onMount(async () => {
         cleanUpFocus = await appWindow.onFocusChanged(({ payload: focused }) => {
             setFocused(focused);
         })
     })
 
+    // Cleans up the focus change event
     onCleanup(() => {
         if (cleanUpFocus) {
             cleanUpFocus()

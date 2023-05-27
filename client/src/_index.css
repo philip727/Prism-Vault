@@ -16,6 +16,7 @@
 
 body {
     background: var(--c4);
+    overflow-x: hidden;
 }
 
 .poppins-text {

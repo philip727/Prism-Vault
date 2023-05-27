@@ -33,7 +33,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "Prism Vault",
       "targets": "all"
     },
     "security": {
@@ -46,7 +46,7 @@
       {
         "fullscreen": false,
         "resizable": false,
-        "title": "Warframe Companion",
+        "title": "Prism Vault",
         "width": 1024,
         "height": 768,
         "decorations": false
