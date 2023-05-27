@@ -11,7 +11,7 @@ fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::default().build())
         .setup(|app| {
-            StoreBuilder::new(app.handle(), "data/user.bin".parse()?).build();
+            StoreBuilder::new(app.handle(), "data/user.data".parse()?).build();
 
             Ok(())
         })

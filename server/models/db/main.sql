@@ -11,6 +11,7 @@ CREATE TABLE sessions (
 	id INT AUTO_INCREMENT PRIMARY KEY NOT NULL UNIQUE,
     token VARCHAR(512) NOT NULL UNIQUE,
     user_id INT NOT NULL,
+    expiry BIGINT UNSIGNED NOT NULL,
     FOREIGN KEY (user_id)
 		REFERENCES users(id)
 			ON UPDATE CASCADE
@@ -19,4 +20,6 @@ CREATE TABLE sessions (
 
 INSERT INTO users (username, email, password) VALUES ("admin", "admin@gmail.com", "aaaa");
 
-SELECT * FROM users;
+DELETE FROM sessions WHERE sessions.user_id = 2;
+
+SELECT * FROM sessions;

@@ -28,5 +28,6 @@ func (u UnsafeUser) GetId() uint32 {
 type Session struct {
 	Id     uint32 `json:"id" gorm:"primaryKey"`
 	Token  string `json:"token"`
+	Expiry int64  `json:"expiry"`
 	UserId uint32 `json:"user_id"`
 }

@@ -27,9 +27,10 @@ func loginSession(c *fiber.Ctx, dbc *gorm.DB) error {
 		return c.Status(400).SendString("Fill in all required fields")
 	}
 
-	if err := usercontroller.MatchInformation(payload, dbc); err != nil {
+	sessionToken, err := usercontroller.MatchInformation(payload, dbc)
+	if err != nil {
 		var payloadError *usercontroller.PayloadError
-        var unauthorizedError *usercontroller.UnauthorizedError
+		var unauthorizedError *usercontroller.UnauthorizedError
 		var existsError *db.ExistsError
 
 		if errors.As(err, &payloadError) || errors.As(err, &existsError) {
@@ -43,5 +44,5 @@ func loginSession(c *fiber.Ctx, dbc *gorm.DB) error {
 		return c.Status(501).SendString(err.Error())
 	}
 
-    return c.SendStatus(200)
+	return c.Status(200).SendString(string(sessionToken))
 }
