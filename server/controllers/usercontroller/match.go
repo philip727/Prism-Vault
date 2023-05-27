@@ -19,8 +19,8 @@ func comparePasswordToHash(pw string, h string) bool {
 }
 
 // Searches for a user by a certain column
-func searchUserByCol(idn string, col string, dbc *gorm.DB) db.UnsafeUser {
-	var user db.UnsafeUser
+func searchUserByCol(idn string, col string, dbc *gorm.DB) db.User {
+	var user db.User
 
 	dbc.Table("users").First(&user, fmt.Sprintln(col, " LIKE ?"), idn)
 
@@ -49,7 +49,7 @@ func matchIdentifier(idn string) Identifier {
 type SessionToken string
 
 // Creates the session token from the user information and current time
-func createSessionToken(u db.UnsafeUser) SessionToken {
+func createSessionToken(u db.User) SessionToken {
 	beforeString := fmt.Sprint(u.Username, u.Id, time.Now().Unix())
 	hash := sha256.Sum256([]byte(beforeString))
 	hashString := hex.EncodeToString(hash[:])
@@ -58,7 +58,7 @@ func createSessionToken(u db.UnsafeUser) SessionToken {
 }
 
 // Stores the session token in the database with an expiry date in unix time
-func storeSession(t SessionToken, u db.UnsafeUser, dbc *gorm.DB) error {
+func storeSession(t SessionToken, u db.User, dbc *gorm.DB) error {
 	expiry := time.Now().Add(time.Hour * 24 * 14).Unix() // 14 day expiry date
 	session := &db.Session{UserId: u.Id, Token: string(t), Expiry: expiry}
 
@@ -81,7 +81,7 @@ type LoginReturn struct {
 
 // Matches the information in the db with the login data given
 func MatchInformation(lp types.LoginPayload, dbc *gorm.DB) (LoginReturn, error) {
-	var user db.UnsafeUser
+	var user db.User
 	var sessionToken SessionToken
 
 	dbs := dbc.Session(&gorm.Session{})
@@ -94,7 +94,7 @@ func MatchInformation(lp types.LoginPayload, dbc *gorm.DB) (LoginReturn, error) 
 		err := db.ColumnExists("users", "email", lp.Identifier, dbs)
 
 		if err != nil {
-			return LoginReturn{user, sessionToken}, &db.ExistsError{Msg: fmt.Sprint("No user exists with the email, ", lp.Identifier)}
+			return LoginReturn{}, &db.ExistsError{Msg: fmt.Sprint("No user exists with the email, ", lp.Identifier)}
 		}
 
 		// Finds the user by email
@@ -104,7 +104,7 @@ func MatchInformation(lp types.LoginPayload, dbc *gorm.DB) (LoginReturn, error) 
 		err := db.ColumnExists("users", "username", lp.Identifier, dbs)
 
 		if err != nil {
-			return LoginReturn{user, sessionToken}, &db.ExistsError{Msg: fmt.Sprint("No user exists with the username, ", lp.Identifier)}
+			return LoginReturn{}, &db.ExistsError{Msg: fmt.Sprint("No user exists with the username, ", lp.Identifier)}
 		}
 
 		// Finds the user by username
@@ -112,13 +112,13 @@ func MatchInformation(lp types.LoginPayload, dbc *gorm.DB) (LoginReturn, error) 
 	}
 
 	if !comparePasswordToHash(lp.Password, user.Password) {
-		return LoginReturn{user, sessionToken}, &UnauthorizedError{Msg: "The password given is incorrect"}
+		return LoginReturn{}, &UnauthorizedError{Msg: "The password given is incorrect"}
 	}
 
 	sessionToken = createSessionToken(user)
 	if err := storeSession(sessionToken, user, dbs); err != nil {
-		return LoginReturn{user, sessionToken}, err
+		return LoginReturn{}, err
 	}
 
-	return LoginReturn{user.GetUser(), sessionToken}, nil
+	return LoginReturn{user.Safe(), sessionToken}, nil
 }

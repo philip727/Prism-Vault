@@ -49,7 +49,7 @@ func InsertUser(dbc *gorm.DB, nu types.NewUserPayload) error {
         return err
     }
 
-    result := dbc.Table("users").Omit("id").Create(&db.UnsafeUser{
+    result := dbc.Table("users").Omit("id").Create(&db.User{
         Username: nu.Username,
         Email: nu.Email,
         Password: hash,
