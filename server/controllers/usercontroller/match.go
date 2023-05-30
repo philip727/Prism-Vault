@@ -22,7 +22,7 @@ func comparePasswordToHash(pw string, h string) bool {
 func searchUserByCol(idn string, col string, dbc *gorm.DB) db.User {
 	var user db.User
 
-	dbc.Table("users").First(&user, fmt.Sprintln(col, " LIKE ?"), idn)
+	dbc.Table("users").First(&user, fmt.Sprintln(col, " = ?"), idn)
 
 	return user
 }
@@ -120,5 +120,5 @@ func MatchInformation(lp types.LoginPayload, dbc *gorm.DB) (LoginReturn, error) 
 		return LoginReturn{}, err
 	}
 
-	return LoginReturn{user.Safe(), sessionToken}, nil
+	return LoginReturn{user.ToSafe(), sessionToken}, nil
 }

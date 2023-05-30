@@ -30,9 +30,9 @@ func Connect() (*gorm.DB, error) {
 }
 
 // Checks if a column in a table, contains a value
-func ColumnContains(tbl string, col string, val string, dbs *gorm.DB) (error) {
+func ColumnContains(tbl string, col string, val string, dbs *gorm.DB) error {
     count := int64(0)
-    result := dbs.Table(tbl).Where(fmt.Sprint(col, " LIKE ?"), val).Count(&count)
+    result := dbs.Table(tbl).Where(fmt.Sprint(col, " = ?"), val).Count(&count)
 
     if result.Error != nil {
         return result.Error
@@ -46,9 +46,9 @@ func ColumnContains(tbl string, col string, val string, dbs *gorm.DB) (error) {
 }
 
 // Checks if a column in a table, contains a value
-func ColumnExists(tbl string, col string, val string, dbs *gorm.DB) (error) {
+func ColumnExists(tbl string, col string, val string, dbs *gorm.DB) error {
     count := int64(0)
-    result := dbs.Table(tbl).Where(fmt.Sprint(col, " LIKE ?"), val).Count(&count)
+    result := dbs.Table(tbl).Where(fmt.Sprint(col, " = ?"), val).Count(&count)
 
     if result.Error != nil {
         return result.Error

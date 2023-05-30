@@ -14,7 +14,7 @@ func validateLoginPayload(p types.LoginPayload) bool {
 	return len(p.Identifier) > 0 && len(p.Password) > 0
 }
 
-func loginSession(c *fiber.Ctx, dbc *gorm.DB) error {
+func newLoginSession(c *fiber.Ctx, dbc *gorm.DB) error {
 	c.Accepts("application/json")
 
 	var payload types.LoginPayload
