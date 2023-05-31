@@ -1,4 +1,4 @@
-export default async function unwrapPromise<T, E>(promise: Promise<T>): Promise<{ result: null | T, err: E | null }> {
+export default async function unwrapPromise<TReturn, UError>(promise: Promise<TReturn>): Promise<{ result: null | TReturn, err: UError | null }> {
     let result = { result: null as any, err: null };
 
     await promise.then(data => {

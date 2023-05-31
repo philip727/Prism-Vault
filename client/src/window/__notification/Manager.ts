@@ -16,6 +16,10 @@ export const [notifications, setNotifications] = createStore<Array<{ id: number,
 
 // Creates a notification in the window rather than a toast
 export const createInWindowNotification = (newNotification: NotificationDetails) => {
+    if (newNotification.text.includes("<DS>")) {
+        return;
+    }
+    
     notificationQueue.enqueue(async () => {
         const id = ++notificationId;
 

@@ -38,10 +38,7 @@ impl error::Error for NoSessionTokenError {}
 
 // Makes a request with the server api to create a user, and sends a certain message back to the frontend
 #[tauri::command]
-pub async fn login_user(
-    app_handle: AppHandle,
-    payload: LoginPayload,
-) -> Result<Value, errors::Error> {
+pub async fn login_user(app_handle: AppHandle, payload: LoginPayload) -> Result<Value, errors::Error> {
     let client = reqwest::Client::new();
     let request = client
         .post("http://127.0.0.1:8080/user/session")
@@ -113,7 +110,7 @@ pub async fn login_with_session(app_handle: AppHandle) -> Result<Value, errors::
     });
 
     if let Err(_) = try_grab_key {
-        return Err(errors::Error::SessionToken("Failed to grab session token from the user".to_string()));
+        return Err(errors::Error::SessionToken("<DS> Failed to grab session token from the user".to_string()));
     }
     
     let session_login = SessionLoginPayload {
