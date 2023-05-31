@@ -9,7 +9,7 @@ import (
 )
 
 type payload struct {
-	Token string
+    Token string `json:"session_token"`
 }
 
 func validateSessionPayload(p payload) bool {
@@ -36,7 +36,10 @@ func verifySession(c *fiber.Ctx, dbc *gorm.DB) error {
 		if errors.As(err, &unauthorizedError) {
 			return c.Status(401).SendString(err.Error())
 		}
+
+
+        return c.Status(500).SendString(err.Error())
 	}
 
-	return c.Status(200).JSON(result)
+	return c.Status(200).JSON(result.ToSafe())
 }

@@ -23,6 +23,7 @@ func newLoginSession(c *fiber.Ctx, dbc *gorm.DB) error {
 		return c.SendStatus(400)
 	}
 
+
 	if !validateLoginPayload(payload) {
 		return c.Status(400).SendString("Fill in all required fields")
 	}

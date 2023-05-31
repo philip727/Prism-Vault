@@ -5,15 +5,20 @@ import Startup from "./views/Startup";
 import Login from "./views/__startup/Login";
 import Register from "./views/__startup/Register";
 import Dashboard from "./views/Dashboard";
+import { onMount } from "solid-js";
+import { loginWithSession } from "./scripts/auth/sessionLogin";
 
 function App() {
+    onMount(() => {
+        loginWithSession();
+    })
     return (
         <Router>
             <Routes>
                 <Route path="/" component={RootLayout}>
                     <Route path="" component={Startup} />
                     <Route path="register" component={Register} />
-                    <Route path="login"component={Login} />
+                    <Route path="login" component={Login} />
                     <Route path="dashboard">
                         <Route path="" component={Dashboard} />
                     </Route>

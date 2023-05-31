@@ -6,6 +6,7 @@ mod warframe;
 use api::user;
 use tauri_plugin_store::StoreBuilder;
 use warframe::items;
+mod errors;
 
 
 
@@ -21,7 +22,8 @@ fn main() {
             items::direct_item,
             items::search_item,
             user::register::register_user,
-            user::login::login_user
+            user::login::login_user,
+            user::login::login_with_session
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

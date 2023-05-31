@@ -19,5 +19,7 @@ func CreateRoute(f *fiber.App, dbc *gorm.DB) {
     })
 
     // Verifies the user session token
-    //user.Post("/verify")
+    user.Post("/verify", func(c *fiber.Ctx) error {
+        return verifySession(c, dbc)
+    })
 }
