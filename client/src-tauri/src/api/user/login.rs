@@ -6,7 +6,7 @@ use std::{error, path::PathBuf, time::Duration};
 use tauri::{AppHandle, Manager, Wry};
 use tauri_plugin_store::{with_store, StoreCollection};
 
-use crate::{api::InternalServerError, errors};
+use crate::errors;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct LoginPayload {
@@ -49,7 +49,7 @@ pub async fn login_user(app_handle: AppHandle, payload: LoginPayload) -> Result<
         .await;
 
     if let Err(_) = request {
-        return Err(errors::Error::InternalApp);
+        return Err(errors::Error::FailedToConnectToServer);
     };
 
     let response = request.unwrap();
@@ -126,7 +126,9 @@ pub async fn login_with_session(app_handle: AppHandle) -> Result<Value, errors::
         .send()
         .await;
 
-    println!("{:?}", session_login);
+    if let Err(_) = request {
+        return Err(errors::Error::FailedToConnectToServer);
+    };
 
     let response = request.unwrap();
 

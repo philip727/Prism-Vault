@@ -2,12 +2,34 @@
 
     &>g>rect {
         transition: all 0.5s ease;
-        opacity: 0.5;
+        opacity: 1;
     }
 
     &:hover {
         &>g>rect {
             opacity: 1;
+            animation: none;
         }
+    }
+}
+
+.breathing {
+    &>g>rect {
+        opacity: 1;
+        animation: breathing 3s ease-in-out infinite normal;
+    }
+}
+
+@keyframes breathing {
+    0% {
+        opacity: 0.2
+    }
+
+    50% {
+        opacity: 1
+    }
+
+    100% {
+        opacity: 0.2
     }
 }

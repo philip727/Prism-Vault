@@ -3,6 +3,8 @@ use serde::{Deserialize, Serialize};
 use std::time::Duration;
 use reqwest::{header::CONTENT_TYPE, StatusCode};
 
+use crate::errors;
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RegisterPayload {
     pub username: String,
@@ -58,9 +60,9 @@ fn verify_register_payload(payload: &RegisterPayload) -> Result<(), String> {
 
 // Makes a request with the server api to create a user, and sends a certain message back to the frontend
 #[tauri::command]
-pub async fn register_user(payload: RegisterPayload) -> Result<String, String> {
+pub async fn register_user(payload: RegisterPayload) -> Result<String, errors::Error> {
     if let Err(e) = verify_register_payload(&payload) {
-        return Err(e.to_string())
+        return Err(errors::Error::ResponseError(e));
     }
 
     let client = reqwest::Client::new();
@@ -72,8 +74,8 @@ pub async fn register_user(payload: RegisterPayload) -> Result<String, String> {
         .send()
         .await;
 
-    if let Err(e) = response {
-        return Err(e.to_string());
+    if let Err(_) = response {
+        return Err(errors::Error::FailedToConnectToServer);
     };
 
     let resp = response.unwrap();
@@ -82,11 +84,12 @@ pub async fn register_user(payload: RegisterPayload) -> Result<String, String> {
 
     // Internal error logs
     if status == StatusCode::INTERNAL_SERVER_ERROR {
-        return Err("Interal Server Error, please check your logs in $HOME/Prism Vault/error.log and contact a developer".to_string())
+        return Err(errors::Error::InternalServer);
     }
 
     if status != StatusCode::OK {
-        return Err(resp.text().await.unwrap());
+        let text = resp.text().await.unwrap();
+        return Err(errors::Error::ResponseError(text));
     }
 
     Ok("Successfully registered".to_string())
