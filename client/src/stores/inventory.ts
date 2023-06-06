@@ -10,7 +10,7 @@ export type InventorySearch = {
 }
 
 let storedSearches: Array<Item> = [];
-const MAX_ITEMS_PER_PAGE = 15;
+const MAX_ITEMS_PER_PAGE = 12;
 export const [inventory, setInventory] = createStore<InventorySearch>({ searches: [], lastSearch: 0, page: 1, maxPage: 1 })
 export const [pageOffset, setPageOffset] = createSignal(0);
 

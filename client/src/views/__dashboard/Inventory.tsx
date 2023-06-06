@@ -1,7 +1,5 @@
 import { invoke } from "@tauri-apps/api"
 import { Component as SComponent, For, Show } from "solid-js"
-import { ButtonType } from "../../components/inputs/Button"
-import DynamicButton from "../../components/inputs/DynamicButton"
 import InputField from "../../components/inputs/InputField"
 import unwrapPromise from "../../scripts/utils/unwrapPromise"
 import { getPageSearches, inventory, updateSearches } from "../../stores/inventory"
@@ -53,7 +51,7 @@ export const Inventory: SComponent = () => {
                 </div>
                 <div class="w-1/3" />
             </div>
-            <div class="w-screen h-[512px]">
+            <div class="w-screen h-[420px]">
                 <ul class="w-screen items-grid gap-6 mt-6 px-6">
                     <For each={inventory.searches}>{(search) => (
                         <Card item={search} />
@@ -69,9 +67,9 @@ export const Inventory: SComponent = () => {
 }
 
 
-    
-    
-    
+
+
+
 const itemHasTradableParts = (item: Item): boolean => {
     if (!item.components || typeof item.components == "undefined") {
         return false;
@@ -80,17 +78,15 @@ const itemHasTradableParts = (item: Item): boolean => {
     for (let i = 0; i < item.components.length; i++) {
         const component = item.components[i];
         if (component.tradable) {
-            continue;
+            return true;
         }
-
-        return false;
     }
 
-    return true;
+    return false;
 }
 
 const isItemTradableOrHasTradableParts = (item: Item): boolean => {
-    return !(!item.isPrime && !item.tradable && !itemHasTradableParts(item));
+    return item.tradable || itemHasTradableParts(item);
 }
 
 const clearItemArray = (arr: Array<Item>) => {

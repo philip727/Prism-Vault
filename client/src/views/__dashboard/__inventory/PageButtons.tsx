@@ -19,7 +19,7 @@ export const PageButtons: Component = () => {
                     onClick={() => setPageOffset(prev => prev - 1)}
                 >
                     <div class="w-[75px] h-full flex items-center justify-center">
-                        <p class="text-white text-center">{"<- Prev"}</p>
+                        <p class="text-white text-center select-none">{"<- Prev"}</p>
                     </div>
                 </DynamicButton>
             </Show>
@@ -32,13 +32,13 @@ export const PageButtons: Component = () => {
                 >
                     <div class="w-full h-full flex items-center justify-center">
                         <div class="w-[12px] flex items-center justify-center">
-                            <p class={`${inventory.page === num ? "text-white" : "text-black"}`}>{num}</p>
+                            <p class={`${inventory.page === num ? "text-white" : "text-black"} select-none`}>{num}</p>
                         </div>
                     </div>
                 </DynamicButton>
             )}
             </For>
-            <Show 
+            <Show
                 when={inventory.maxPage > MAX_PAGE_BUTTONS && pageOffset() + MAX_PAGE_BUTTONS < inventory.maxPage}
                 fallback={
                     <div class="w-[107px] " />
@@ -49,7 +49,7 @@ export const PageButtons: Component = () => {
                     onClick={() => setPageOffset(prev => prev + 1)}
                 >
                     <div class="w-[75px] h-full flex items-center justify-center">
-                        <p class="text-white text-center">{"Next ->"}</p>
+                        <p class="text-white text-center select-none">{"Next ->"}</p>
                     </div>
                 </DynamicButton>
             </Show>
