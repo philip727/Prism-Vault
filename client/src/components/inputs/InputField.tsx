@@ -1,4 +1,4 @@
-import { Component } from "solid-js"
+import { Component, JSX } from "solid-js"
 import "./Inputs.scss"
 
 type Props = {
@@ -10,6 +10,7 @@ type Props = {
     showPrompt?: boolean,
     promptDetails?: string[],
     onChange?: (e: Event & { target: HTMLInputElement, currentTarget: HTMLInputElement }) => void,
+    onKeyUp?: (e: KeyboardEvent & { currentTarget: HTMLInputElement; target: Element; })  => any,
 }
 
 const InputField: Component<Props> = (props) => {
@@ -21,9 +22,8 @@ const InputField: Component<Props> = (props) => {
             class={"focus-shadow w-72 h-10 bg-[var(--c5)] rounded-lg px-2 text-white " + props.class}
             maxLength={props.maxLength} 
             onChange={props.onChange}
-        >
-
-        </input>
+            onKeyUp={props.onKeyUp}
+        />
     )
 }
 

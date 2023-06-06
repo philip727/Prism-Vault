@@ -1,0 +1,8 @@
+.items-grid {
+    --min: 20ch;
+
+    display: grid;
+    gap: 3rem;
+    grid-template-columns: repeat(3, 1fr);
+    justify-items: center;
+}

@@ -1,6 +1,5 @@
-import { P } from "@tauri-apps/api/event-30ea0228"
-import { createEffect } from "solid-js"
 import { createStore } from "solid-js/store"
+import { Item } from "./views/__dashboard/Inventory"
 
 export type Client = {
     user: UserDetails,
@@ -19,11 +18,5 @@ export const updateClient = (user: UserDetails) => {
         return;
     }
 
-    console.log(user);
-
     setClient({ user: user, isAuthenticated: user.id >= 0 && user.username.length > 0 })
 }
-
-createEffect(() => {
-    console.log(client.isAuthenticated);
-})

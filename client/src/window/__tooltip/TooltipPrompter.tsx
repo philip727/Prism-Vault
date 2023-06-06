@@ -12,7 +12,6 @@ const TooltipPrompter: Component<Props> = (props) => {
         <Motion.div
             hover={{ scale: 1 }}
             onHoverStart={() => {
-                console.log("hi");
                 setShowTooltip(true);
                 setTooltipText(props.prompt ? props.prompt : "")
             }}
