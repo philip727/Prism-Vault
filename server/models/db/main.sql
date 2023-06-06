@@ -23,3 +23,7 @@ INSERT INTO users (username, email, password) VALUES ("admin", "admin@gmail.com"
 DELETE FROM sessions WHERE sessions.user_id = 2;
 
 SELECT * FROM sessions;
+
+SELECT * FROM sessions WHERE token = "2384ea4d5d8598cb3a02c7f092fc84664681ffb93103ff380dc2b6c2512cb842";
+
+SELECT * FROM users;

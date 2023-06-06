@@ -1,3 +1,4 @@
+import { Motion } from "@motionone/solid";
 import { useNavigate } from "@solidjs/router";
 import { invoke } from "@tauri-apps/api";
 import { Component } from "solid-js";
@@ -39,7 +40,12 @@ const Register: Component = () => {
     }
 
     return (
-        <div class="w-screen h-screen flex flex-col justify-center items-center gap-6">
+        <Motion.div
+            class="w-screen h-screen flex flex-col justify-center items-center gap-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+        >
             <Logo />
             <h1 class="text-4xl text-center text-white font-bold tracking-wider hover:tracking-widest transition-all duration-300">Register</h1>
             <form
@@ -62,7 +68,7 @@ const Register: Component = () => {
                     </Button>
                 </div>
             </form>
-        </div>
+        </Motion.div>
     )
 }
 

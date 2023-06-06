@@ -8,7 +8,7 @@ type User struct {
 	Password string `json:"password,omitempty"`
 }
 
-func (u User) Safe() User {
+func (u User) ToSafe() User {
 	return User{
 		Id:       u.Id,
 		Username: u.Username,

@@ -1,7 +1,26 @@
-const Dashboard = () => {
-    return (
-        <div class = "w-1/2 h-12 bg-white flex flex-row gap-6 mt-6">
+import { createSignal, Match, Switch } from "solid-js";
+import { Inventory } from "./__dashboard/Inventory";
+import { Tabs } from "./__dashboard/Tabs";
 
+export enum DashboardViews {
+    INVENTORY = "INVENTORY",
+    MARKET = "MARKET"
+}
+
+const Dashboard = () => {
+    let [view, setView] = createSignal<DashboardViews>(DashboardViews.INVENTORY);
+
+    return (
+        <div>
+            <Tabs setView={setView} />
+            <Switch>
+                <Match when={view() === DashboardViews.INVENTORY}>
+                    <Inventory />
+                </Match>
+                <Match when={view() === DashboardViews.MARKET}>
+
+                </Match>
+            </Switch>
         </div>
     )
 }

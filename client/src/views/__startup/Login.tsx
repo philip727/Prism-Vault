@@ -1,3 +1,4 @@
+import { Motion } from "@motionone/solid"
 import { useNavigate } from "@solidjs/router"
 import { invoke } from "@tauri-apps/api"
 import { Component } from "solid-js"
@@ -5,10 +6,12 @@ import Logo from "../../assets/Logo"
 import Button, { ButtonType } from "../../components/inputs/Button"
 import InputField from "../../components/inputs/InputField"
 import unwrapPromise from "../../scripts/utils/unwrapPromise"
+import { updateClient, UserDetails } from "../../store"
 import { createInWindowNotification } from "../../window/__notification/Manager"
 
 const Login: Component = () => {
     const navigate = useNavigate();
+
     const clientInfo: { [key: string]: string } = {
         identifier: "",
         password: "",
@@ -19,11 +22,19 @@ const Login: Component = () => {
     }
 
     const login = async () => {
-        let { err, result } = await unwrapPromise<string, string>(invoke("login_user", { payload: clientInfo }));
+        let { err, result } = await unwrapPromise<UserDetails, string>(invoke("login_user", { payload: clientInfo }));
 
         if (err) {
             createInWindowNotification({
                 text: err,
+                lengthInSeconds: 5,
+            })
+            return;
+        }
+
+        if (!result) {
+            createInWindowNotification({
+                text: "User details were not returned on login, try logging in again.",
                 lengthInSeconds: 5,
             })
             return;
@@ -34,12 +45,17 @@ const Login: Component = () => {
             lengthInSeconds: 5,
         })
 
-        navigate("/dashboard");
-        console.log(result);
+        updateClient(result);
+        navigate("/dashboard")
     }
 
     return (
-        <div class="w-screen h-screen flex flex-col justify-center items-center gap-6">
+        <Motion.div
+            class="w-screen h-screen flex flex-col justify-center items-center gap-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+        >
             <Logo />
             <h1 class="text-4xl text-white text-center font-bold tracking-wider hover:tracking-widest transition-all duration-300">Login</h1>
             <form
@@ -60,7 +76,7 @@ const Login: Component = () => {
                     </Button>
                 </div>
             </form>
-        </div>
+        </Motion.div>
     )
 }
 
