@@ -2,13 +2,14 @@ import { invoke } from "@tauri-apps/api"
 import { Component as SComponent, For, Show } from "solid-js"
 import InputField from "../../components/inputs/InputField"
 import unwrapPromise from "../../scripts/utils/unwrapPromise"
-import { getPageSearches, inventory, updateSearches } from "../../stores/inventory"
+import { inventory, updateSearches } from "../../stores/inventory"
 import './Inventory.scss'
 import { Card } from "./__inventory/Card"
 import { PageButtons } from "./__inventory/PageButtons"
 
 export type Item = {
     name: string,
+    description: string,
     isPrime: boolean,
     category: string,
     uniqueName: string,
@@ -18,11 +19,24 @@ export type Item = {
     [key: string]: any,
 }
 
-type Component = {
+// type guard
+export function isItem(item: Item | object): item is Item {
+    return (item as Item).name !== undefined;
+}
+
+export type Component = {
     name: string,
     tradable: boolean,
     uniqueName: string,
+    drops: Array<Drop>
     [key: string]: any,
+}
+
+export type Drop = {
+    chance: number,
+    location: string,
+    rarity: string,
+    type: string,
 }
 
 
@@ -38,6 +52,8 @@ export const Inventory: SComponent = () => {
 
         if (!result) return;
         result = clearItemArray(result);
+
+        console.log(result);
 
         updateSearches(result, searchTime)
     }

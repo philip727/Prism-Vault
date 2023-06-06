@@ -1,5 +1,6 @@
 import { appWindow } from "@tauri-apps/api/window"
 import { Component, createSignal, onCleanup, onMount } from "solid-js"
+import TooltipPrompter from "./__tooltip/TooltipPrompter";
 
 const Toolbar: Component = () => {
     let [focused, setFocused] = createSignal(false);
@@ -15,7 +16,7 @@ const Toolbar: Component = () => {
     // Cleans up the focus change event
     onCleanup(() => {
         if (cleanUpFocus) {
-            cleanUpFocus()
+            cleanUpFocus();
         }
     })
 
@@ -37,12 +38,16 @@ const Toolbar: Component = () => {
                 data-tauri-drag-region
                 class="w-1/3 flex flex-row items-center justify-end h-full select-none"
             >
-                <button class="toolbar-icon px-2 h-full" onclick={() => appWindow.minimize()}>
-                    <img class="h-3 w-3" src="toolbar/minimise.svg" />
-                </button>
-                <button class="toolbar-icon-important px-2 h-full" onclick={() => appWindow.close()}>
+                <TooltipPrompter prompt="Minimise">
+                    <button class="toolbar-icon px-2 h-6" onclick={() => appWindow.minimize()}>
+                        <img class="h-3 w-3" src="toolbar/minimise.svg" />
+                    </button>
+                </TooltipPrompter>
+                <TooltipPrompter prompt="Exit">
+                <button class="toolbar-icon-important px-2 h-6" onclick={() => appWindow.close()}>
                     <img class="h-3 w-3" src="toolbar/exit.svg" />
                 </button>
+                </TooltipPrompter>
             </div>
         </div>
     )
