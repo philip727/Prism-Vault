@@ -18,6 +18,13 @@ pub struct Order {
     quantity: usize,
     order_type: String,
     platinum: usize,
+    user: User,
+}
+
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct User {
+    status: String,
 }
 
 #[tauri::command]
@@ -55,10 +62,11 @@ pub async fn get_order(item_name: String) -> Result<Order, errors::Error> {
        quantity: 0,
        order_type: "sell".to_string(),
        platinum: 99999999,
+       user: User { status: "offline".to_string() }
     };
 
     for order in order_iter {
-        if order.order_type == "sell" && order.platinum < cheapest_order.platinum {
+        if order.order_type == "sell" && order.platinum < cheapest_order.platinum && order.user.status == "ingame" {
             cheapest_order = order.clone();
         }
     }

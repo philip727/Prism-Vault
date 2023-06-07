@@ -1,3 +1,10 @@
+export enum ProductCategory {
+    MOD = "Mods",
+    RELIC = "Relics",
+    ARCANE = "Arcanes"
+}
+
+
 export type Item = {
     name: string,
     description: string,
@@ -10,6 +17,19 @@ export type Item = {
     [key: string]: any,
 }
 
+export const newItem = (): Item => {
+    return {
+        name: "Default",
+        description: "",
+        isPrime: false,
+        category: "Unknown",
+        uniqueName: "Unknown",
+        tradable: false,
+        components: [],
+        wikiaThumbnail: ""
+    }
+}
+
 // type guard
 export function isItem(item: Item | object): item is Item {
     return (item as Item).name !== undefined;
@@ -19,7 +39,9 @@ export type Component = {
     name: string,
     tradable: boolean,
     uniqueName: string,
-    drops: Array<Drop>
+    drops: Array<Drop>,
+    productCategory?: string,
+    wikiaThumbnail?: string,
     [key: string]: any,
 }
 
@@ -28,6 +50,12 @@ export type Drop = {
     location: string,
     rarity: string,
     type: string,
+}
+
+export type Order = {
+    quanity: number,
+    orderType: string,
+    platinum: number
 }
 
 export const itemHasTradableParts = (item: Item): boolean => {
@@ -73,16 +101,27 @@ const PART_PICTURES: { [key: string]: { [key: string]: string } } = {
     LATCH: {
         PRIME: "https://static.wikia.nocookie.net/warframe/images/f/ff/GenericComponentPrimeLatch.png",
         NORMAL: "https://static.wikia.nocookie.net/warframe/images/f/ff/GenericComponentPrimeLatch.png"
+    },
+    PLUG: {
+        PRIME: "https://static.wikia.nocookie.net/warframe/images/b/b3/GenericComponentPrimePlug.png",
+        NORMAL: "https://static.wikia.nocookie.net/warframe/images/b/b3/GenericComponentPrimePlug.png",
     }
 }
 
 export const getComponentPicture = (item: Item, component: Component): string => {
+    if (component.productCategory === "Pistols") {
+        return cleanWikiaThumbnail(component.wikiaThumbnail as string);
+    }
+
+
     let type = "NORMAL"
     if (item.isPrime) {
         type = "PRIME";
     }
 
     switch (component.name) {
+        case "Head":
+            return PART_PICTURES.BLADE[type];
         case "Barrel":
             return PART_PICTURES.BARREL[type];
         case "Receiver":
@@ -106,6 +145,8 @@ export const getComponentPicture = (item: Item, component: Component): string =>
             return PART_PICTURES.LATCH[type]
         case "String":
             return PART_PICTURES.STOCK[type]
+        case "Link":
+            return PART_PICTURES.PLUG[type]
         case "Blueprint":
             return cleanWikiaThumbnail(item.wikiaThumbnail);
         default:
@@ -125,3 +166,13 @@ export const cleanWikiaThumbnail = (url: string): string => {
         return url;
     }
 }
+
+export const isItemWithoutDescription = (item: Item): boolean => {
+    return item.category === ProductCategory.MOD || item.category === ProductCategory.ARCANE
+}
+
+export const isItemWithoutComponents = (item: Item): boolean => {
+    console.log(item);
+    return item.category === ProductCategory.MOD || item.category === ProductCategory.ARCANE || item.category === ProductCategory.RELIC || typeof item.components == "undefined";
+}
+

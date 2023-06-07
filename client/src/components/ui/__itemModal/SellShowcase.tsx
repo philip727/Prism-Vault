@@ -1,29 +1,23 @@
 import { invoke } from "@tauri-apps/api"
-import { Component as SComponent, createEffect, createSignal, Show } from "solid-js"
+import { Component, createEffect, createSignal, Show } from "solid-js"
 import { Loading } from "../../../assets/Loading"
 import createTask from "../../../hooks/createTask"
-import { Component, getComponentPicture, Item, Order } from "../../../scripts/inventory"
+import { Item, Order } from "../../../scripts/inventory"
 import TooltipPrompter from "../../../window/__tooltip/TooltipPrompter"
 import InputField from "../../inputs/InputField"
 
 type Props = {
-    item: Item,
-    component: Component,
-    handleUpdate: (n: string, p: number, q: number) => void,
+    item: Item
 }
 
-export const PartShowcase: SComponent<Props> = (props) => {
+
+
+
+export const SellShowcase: Component<Props> = (props) => {
     const [platinum, setPlatinum] = createSignal<number>(0)
 
-    let partFullName = "";
-    // If it has a product category then it must be another set
-    if (typeof props.component.productCategory == "undefined") {
-        partFullName = props.item.name + " " + props.component.name
-    } else {
-        partFullName = props.component.name + "_set"
-    }
-
-    let marketQueryString = partFullName.replaceAll(" ", "_").toLowerCase();
+    let marketQueryString = props.item.name.replaceAll(" ", "_").toLowerCase();
+    console.log(marketQueryString)
     const orderTask = createTask<Order, String>(invoke("get_order", { itemName: marketQueryString }));
 
     createEffect(() => {
@@ -31,7 +25,6 @@ export const PartShowcase: SComponent<Props> = (props) => {
             return;
         }
 
-        props.handleUpdate(props.component.name, orderTask.response.platinum, 0);
         setPlatinum(orderTask.response.platinum);
     })
 
@@ -43,12 +36,10 @@ export const PartShowcase: SComponent<Props> = (props) => {
                     type="number"
                     class="!w-16 !h-8"
                     onKeyUp={(e) => {
-                        props.handleUpdate(props.component.name, platinum(), parseInt(e.currentTarget.value))
                     }}
                 />
             </TooltipPrompter>
-            <img class="h-7 w-7 ml-2" src={getComponentPicture(props.item, props.component)} />
-            <p class="ml-2 text-white text-base font-light w-72">{props.component.name}</p>
+            <p class="ml-2 text-white text-base font-light w-60">x1 Sell Price</p>
             <div class="w-full h-full flex flex-row justify-end items-center">
                 <Show when={!orderTask.isLoading && orderTask.response}
                     fallback={<Loading width="32" height="32" />}

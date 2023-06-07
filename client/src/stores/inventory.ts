@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
 import { createStore } from "solid-js/store";
-import { Item } from "../views/__dashboard/Inventory";
+import { Item } from "../scripts/inventory";
 
 export type InventorySearch = {
     searches: Array<Item>,
