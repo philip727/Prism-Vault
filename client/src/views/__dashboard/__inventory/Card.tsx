@@ -1,8 +1,8 @@
 import { Motion } from "@motionone/solid"
 import { Component } from "solid-js"
+import { cleanWikiaThumbnail, Item } from "../../../scripts/inventory"
 import { setItemDetails, setItemModal } from "../../../stores/itemModal"
 import TooltipPrompter from "../../../window/__tooltip/TooltipPrompter"
-import { Item } from "../Inventory"
 
 type Props = {
     item: Item
@@ -34,14 +34,3 @@ export const Card: Component<Props> = (props) => {
     )
 }
 
-export const cleanWikiaThumbnail = (url: string): string => {
-    if (typeof url == "undefined") {
-        return "./logos/wf-comp-logo.svg"
-    }
-
-    try {
-        return url.split("/revision")[0];
-    } catch {
-        return url;
-    }
-}

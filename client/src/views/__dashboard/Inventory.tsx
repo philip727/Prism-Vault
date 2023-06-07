@@ -1,43 +1,12 @@
 import { invoke } from "@tauri-apps/api"
 import { Component as SComponent, For, Show } from "solid-js"
 import InputField from "../../components/inputs/InputField"
+import { isItemTradableOrHasTradableParts, Item } from "../../scripts/inventory"
 import unwrapPromise from "../../scripts/utils/unwrapPromise"
 import { inventory, updateSearches } from "../../stores/inventory"
 import './Inventory.scss'
 import { Card } from "./__inventory/Card"
 import { PageButtons } from "./__inventory/PageButtons"
-
-export type Item = {
-    name: string,
-    description: string,
-    isPrime: boolean,
-    category: string,
-    uniqueName: string,
-    tradable: boolean,
-    components: Array<Component>
-    wikiaThumbnail: string,
-    [key: string]: any,
-}
-
-// type guard
-export function isItem(item: Item | object): item is Item {
-    return (item as Item).name !== undefined;
-}
-
-export type Component = {
-    name: string,
-    tradable: boolean,
-    uniqueName: string,
-    drops: Array<Drop>
-    [key: string]: any,
-}
-
-export type Drop = {
-    chance: number,
-    location: string,
-    rarity: string,
-    type: string,
-}
 
 
 export const Inventory: SComponent = () => {
@@ -80,25 +49,6 @@ export const Inventory: SComponent = () => {
             </Show>
         </article>
     )
-}
-
-export const itemHasTradableParts = (item: Item): boolean => {
-    if (!item.components || typeof item.components == "undefined") {
-        return false;
-    }
-
-    for (let i = 0; i < item.components.length; i++) {
-        const component = item.components[i];
-        if (component.tradable) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-const isItemTradableOrHasTradableParts = (item: Item): boolean => {
-    return item.tradable || itemHasTradableParts(item);
 }
 
 const clearItemArray = (arr: Array<Item>) => {

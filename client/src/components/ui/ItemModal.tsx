@@ -1,7 +1,6 @@
 import { Component as SComponent, For, Match, Show, Switch } from "solid-js"
+import { cleanWikiaThumbnail, itemHasTradableParts } from "../../scripts/inventory";
 import { itemDetails, itemModal, setItemModal } from "../../stores/itemModal"
-import { itemHasTradableParts } from "../../views/__dashboard/Inventory";
-import { cleanWikiaThumbnail } from "../../views/__dashboard/__inventory/Card";
 import './ItemModal.scss'
 import { PartShowcase } from "./__itemModal/PartShowcase";
 
@@ -44,7 +43,7 @@ export const ItemModal: SComponent = () => {
                             </Switch>
                         </div>
                     </article>
-                    <div class="w-full flex flex-col gap-2 mt-2 ml-4">
+                    <div class="w-full flex flex-col gap-2 mt-4 ml-4">
                         <Switch>
                             <Match when={itemHasTradableParts(itemDetails)}>
                                 <For each={itemDetails.components}>{(component) => (
