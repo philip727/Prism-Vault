@@ -8,8 +8,6 @@ use tauri_plugin_store::StoreBuilder;
 use warframe::items;
 mod errors;
 
-
-
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::default().build())
@@ -19,11 +17,15 @@ fn main() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            items::direct_item,
-            items::search_item,
+            // Warframe Items 
+            items::search_directly_for_item,
+            items::search_query,
+            items::market::get_order,
+
+            // User 
             user::register::register_user,
             user::login::login_user,
-            user::login::login_with_session
+            user::login::login_with_session,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

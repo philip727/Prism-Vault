@@ -12,7 +12,7 @@ export const Tabs: Component<Props> = (props) => {
         <div class="flex flex-row mt-6">
             <div class="w-1/3 h-12 flex flex-row gap-6" />
             <div class="w-1/3 h-16 flex flex-row justify-center items-center gap-6 pl-4">
-                <TooltipPrompter prompt="Part Collection">
+                <TooltipPrompter prompt="Your Collection">
                     <Motion.img
                         class="h-8 w-8"
                         src="/dashboard/section-bar/inventory-logo.svg"

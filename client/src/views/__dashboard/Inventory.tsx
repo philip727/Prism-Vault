@@ -48,7 +48,7 @@ export const Inventory: SComponent = () => {
             return;
         }
 
-        let { err, result } = await unwrapPromise<Array<Item>, string>(invoke("search_item", { query: e.currentTarget.value }));
+        let { err, result } = await unwrapPromise<Array<Item>, string>(invoke("search_query", { query: e.currentTarget.value }));
 
         if (!result) return;
         result = clearItemArray(result);
@@ -82,11 +82,7 @@ export const Inventory: SComponent = () => {
     )
 }
 
-
-
-
-
-const itemHasTradableParts = (item: Item): boolean => {
+export const itemHasTradableParts = (item: Item): boolean => {
     if (!item.components || typeof item.components == "undefined") {
         return false;
     }

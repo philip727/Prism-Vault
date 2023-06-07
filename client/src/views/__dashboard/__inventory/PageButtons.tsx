@@ -1,7 +1,7 @@
 import { Component, For, Show } from "solid-js"
 import { ButtonType } from "../../../components/inputs/Button";
 import DynamicButton from "../../../components/inputs/DynamicButton";
-import { getPageSearches, inventory, pageOffset, setPageOffset } from "../../../stores/inventory";
+import { getPageSearches, inventory, pageOffset, setInventory, setPageOffset } from "../../../stores/inventory";
 
 const MAX_PAGE_BUTTONS = 6;
 
@@ -16,7 +16,10 @@ export const PageButtons: Component = () => {
             >
                 <DynamicButton
                     colourType={ButtonType.STANDOUT}
-                    onClick={() => setPageOffset(prev => prev - 1)}
+                    onClick={() => {
+                        setPageOffset(prev => prev - 1)
+                        getPageSearches(inventory.page - 1);
+                    }}
                 >
                     <div class="w-[75px] h-full flex items-center justify-center">
                         <p class="text-white text-center select-none">{"<- Prev"}</p>
@@ -46,7 +49,10 @@ export const PageButtons: Component = () => {
             >
                 <DynamicButton
                     colourType={ButtonType.STANDOUT}
-                    onClick={() => setPageOffset(prev => prev + 1)}
+                    onClick={() => {
+                        setPageOffset(prev => prev + 1);
+                        getPageSearches(inventory.page + 1);
+                    }}
                 >
                     <div class="w-[75px] h-full flex items-center justify-center">
                         <p class="text-white text-center select-none">{"Next ->"}</p>
