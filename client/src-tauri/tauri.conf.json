@@ -22,6 +22,10 @@
         "startDragging": true,
         "close": true,
         "minimize": true
+      },
+      "http": {
+          "all": true,
+          "request": true
       }
     },
     "bundle": {

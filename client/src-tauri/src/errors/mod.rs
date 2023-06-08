@@ -12,6 +12,8 @@ pub enum Error {
     ResponseError(String),
     #[error("Failed to connect to the server when making a request")]
     FailedToConnectToServer,
+    #[error("Error occured with an input provided from the user")]
+    InvalidInput(String),
 }
 
 impl Serialize for Error {
@@ -22,6 +24,7 @@ impl Serialize for Error {
         match self {
             Error::ResponseError(value)
             | Error::SessionToken(value) => serializer.serialize_str(value.as_ref()),
+            | Error::InvalidInput(value) => serializer.serialize_str(value.as_ref()),
             _ => serializer.serialize_str(self.to_string().as_ref()) 
         }
     }

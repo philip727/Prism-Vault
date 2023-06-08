@@ -3,6 +3,7 @@ import { Component as SComponent, createEffect, createSignal, Show } from "solid
 import { Loading } from "../../../assets/Loading"
 import createTask from "../../../hooks/createTask"
 import { Component, getComponentPicture, Item, Order } from "../../../scripts/inventory"
+import unwrapPromise from "../../../scripts/utils/unwrapPromise"
 import TooltipPrompter from "../../../window/__tooltip/TooltipPrompter"
 import InputField from "../../inputs/InputField"
 
@@ -26,7 +27,7 @@ export const PartShowcase: SComponent<Props> = (props) => {
     let marketQueryString = partFullName.replaceAll(" ", "_").toLowerCase();
     const orderTask = createTask<Order, String>(invoke("get_order", { itemName: marketQueryString }));
 
-    createEffect(() => {
+    createEffect(async () => {
         if (orderTask.isLoading || !orderTask.response) {
             return;
         }
@@ -35,6 +36,19 @@ export const PartShowcase: SComponent<Props> = (props) => {
         setPlatinum(orderTask.response.platinum);
     })
 
+
+    const handleQuantityUpdate = async (e: Event & { target: HTMLInputElement, currentTarget: HTMLInputElement }) => {
+        if (!e.currentTarget.value) {
+            return;
+        }
+
+        const { err, result } = await unwrapPromise(invoke("add_item", { uniqueName: props.component.uniqueName, quantity: parseInt(e.currentTarget.value, 10) }));
+        if (err) {
+            console.log(err);
+            return;
+        }
+    }
+
     return (
         <div class="bg-[var(--c3)] rounded-md w-96 flex flex-row items-center">
             <TooltipPrompter prompt="Quantity">
@@ -42,6 +56,7 @@ export const PartShowcase: SComponent<Props> = (props) => {
                     value="0"
                     type="number"
                     class="!w-16 !h-8"
+                    onChange={handleQuantityUpdate}
                     onKeyUp={(e) => {
                         props.handleUpdate(props.component.name, platinum(), parseInt(e.currentTarget.value))
                     }}

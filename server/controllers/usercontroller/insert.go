@@ -32,14 +32,12 @@ func InsertUser(dbc *gorm.DB, nu types.NewUserPayload) error {
 		return &PayloadError{Msg: "Password does not meet the criteria"}
 	}
 
-    dbs := dbc.Session(&gorm.Session{})
-
-    err := db.ColumnContains("users", "username", nu.Username, dbs)
+    err := db.ColumnContains("users", "username", nu.Username, dbc)
     if err != nil {
         return err
     }
 
-    err = db.ColumnContains("users", "email", nu.Email, dbs)
+    err = db.ColumnContains("users", "email", nu.Email, dbc)
     if err != nil {
         return err
     }
