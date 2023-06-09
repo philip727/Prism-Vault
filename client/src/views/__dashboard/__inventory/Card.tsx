@@ -1,7 +1,7 @@
 import { Motion } from "@motionone/solid"
 import { Component } from "solid-js"
 import { cleanWikiaThumbnail, Item, ProductCategory } from "../../../scripts/inventory"
-import { setItemModal, updateItemDetailsOnModal } from "../../../stores/itemModal"
+import { setIsItemModalOpen, updateItemDetailsOnModal } from "../../../stores/itemModal"
 import TooltipPrompter from "../../../window/__tooltip/TooltipPrompter"
 
 type Props = {
@@ -17,7 +17,7 @@ export const Card: Component<Props> = (props) => {
                 press={{ scale: 0.95 }}
                 transition={{ duration: 0.3 }}
                 onClick={() => {
-                    setItemModal(true);
+                    setIsItemModalOpen(true);
                     updateItemDetailsOnModal(props.item);
                 }}
             >

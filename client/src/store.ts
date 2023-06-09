@@ -1,5 +1,4 @@
 import { createStore } from "solid-js/store"
-import { Item } from "./views/__dashboard/Inventory"
 
 export type Client = {
     user: UserDetails,

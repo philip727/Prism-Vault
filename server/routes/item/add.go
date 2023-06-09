@@ -7,20 +7,19 @@ import (
 	"gorm.io/gorm"
 )
 
-func verifyAddItemPayload(p types.WarframeItemPayload) bool {
+func verifyAddItemPayload(p types.AddItemPayload) bool {
     return len(p.UniqueName) > 0
 }
 
 func addItem(c *fiber.Ctx, dbc *gorm.DB) error {
 	c.Accepts("application/json")
 
-	userIdLocal := c.Locals("userId")
-	userId, ok := userIdLocal.(uint32)
+	userId, ok := c.Locals("userId").(uint32)
 	if !ok {
-		return c.SendStatus(500)
+		return c.Status(500).SendString("Internal Server Error when trying to parse the user id from a session token")
 	}
 
-	var payload types.WarframeItemPayload
+	var payload types.AddItemPayload
 
 	if err := c.BodyParser(&payload); err != nil {
 		return c.SendStatus(400)
@@ -44,3 +43,4 @@ func addItem(c *fiber.Ctx, dbc *gorm.DB) error {
 
 	return c.SendStatus(200)
 }
+

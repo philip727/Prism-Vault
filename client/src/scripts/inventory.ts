@@ -167,12 +167,13 @@ export const cleanWikiaThumbnail = (url: string): string => {
     }
 }
 
+// Mostly mods and arcanes
 export const isItemWithoutDescription = (item: Item): boolean => {
     return item.category === ProductCategory.MOD || item.category === ProductCategory.ARCANE
 }
 
+// Things like mods or syndicate weapons or arcanes
 export const isItemWithoutComponents = (item: Item): boolean => {
-    console.log(item);
     return item.category === ProductCategory.MOD || item.category === ProductCategory.ARCANE || item.category === ProductCategory.RELIC || typeof item.components == "undefined";
 }
 

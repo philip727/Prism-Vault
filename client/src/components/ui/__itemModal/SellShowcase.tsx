@@ -1,8 +1,7 @@
-import { invoke } from "@tauri-apps/api"
 import { Component, createEffect, createSignal, Show } from "solid-js"
 import { Loading } from "../../../assets/Loading"
-import createTask from "../../../hooks/createTask"
-import { Item, Order } from "../../../scripts/inventory"
+import { Item } from "../../../scripts/inventory"
+import { parts } from "../../../stores/partCache"
 import TooltipPrompter from "../../../window/__tooltip/TooltipPrompter"
 import InputField from "../../inputs/InputField"
 
@@ -14,18 +13,14 @@ type Props = {
 
 
 export const SellShowcase: Component<Props> = (props) => {
-    const [platinum, setPlatinum] = createSignal<number>(0)
-
-    let marketQueryString = props.item.name.replaceAll(" ", "_").toLowerCase();
-    console.log(marketQueryString)
-    const orderTask = createTask<Order, String>(invoke("get_order", { itemName: marketQueryString }));
+    const [platinum, setPlatinum] = createSignal(0);
 
     createEffect(() => {
-        if (orderTask.isLoading || !orderTask.response) {
+        if (typeof parts[props.item.uniqueName] == "undefined") {
             return;
         }
 
-        setPlatinum(orderTask.response.platinum);
+        setPlatinum(parts[props.item.uniqueName].platinum)
     })
 
     return (
@@ -41,7 +36,7 @@ export const SellShowcase: Component<Props> = (props) => {
             </TooltipPrompter>
             <p class="ml-2 text-white text-base font-light w-60">x1 Sell Price</p>
             <div class="w-full h-full flex flex-row justify-end items-center">
-                <Show when={!orderTask.isLoading && orderTask.response}
+                <Show when={platinum() != 0}
                     fallback={<Loading width="32" height="32" />}
                 >
                     <TooltipPrompter prompt="Lowest Platinum Price">

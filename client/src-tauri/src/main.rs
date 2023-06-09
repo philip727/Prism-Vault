@@ -28,7 +28,8 @@ fn main() {
             user::login::login_with_session,
 
             // Collection
-            collection::add_item,
+            collection::add::add_item,
+            collection::get::get_components,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
