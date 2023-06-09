@@ -3,7 +3,7 @@ import { Component as SComponent, For, Show } from "solid-js"
 import InputField from "../../components/inputs/InputField"
 import { isItemTradableOrHasTradableParts, Item } from "../../scripts/inventory"
 import unwrapPromise from "../../scripts/utils/unwrapPromise"
-import { inventory, updateSearches } from "../../stores/inventory"
+import { searches, updateSearches } from "../../stores/search"
 import './Inventory.scss'
 import { Card } from "./__inventory/Card"
 import { PageButtons } from "./__inventory/PageButtons"
@@ -38,13 +38,13 @@ export const Inventory: SComponent = () => {
             </div>
             <div class="w-screen h-[420px]">
                 <ul class="w-screen items-grid gap-6 mt-6 px-6">
-                    <For each={inventory.searches}>{(search) => (
+                    <For each={searches.searches}>{(search) => (
                         <Card item={search} />
                     )}
                     </For>
                 </ul>
             </div>
-            <Show when={inventory.maxPage > 1}>
+            <Show when={searches.maxPage > 1}>
                 <PageButtons />
             </Show>
         </article>

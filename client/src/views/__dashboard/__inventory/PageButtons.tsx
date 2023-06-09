@@ -1,7 +1,7 @@
 import { Component, For, Show } from "solid-js"
 import { ButtonType } from "../../../components/inputs/Button";
 import DynamicButton from "../../../components/inputs/DynamicButton";
-import { getPageSearches, inventory, pageOffset, setInventory, setPageOffset } from "../../../stores/inventory";
+import { getPageSearches, searches, pageOffset, setPageOffset } from "../../../stores/search";
 
 const MAX_PAGE_BUTTONS = 6;
 
@@ -9,7 +9,7 @@ export const PageButtons: Component = () => {
     return (
         <ol class="flex w-full gap-6 justify-center mt-6">
             <Show
-                when={inventory.maxPage > MAX_PAGE_BUTTONS && pageOffset() > 0}
+                when={searches.maxPage > MAX_PAGE_BUTTONS && pageOffset() > 0}
                 fallback={
                     <div class="w-[107px] " />
                 }
@@ -18,7 +18,7 @@ export const PageButtons: Component = () => {
                     colourType={ButtonType.STANDOUT}
                     onClick={() => {
                         setPageOffset(prev => prev - 1)
-                        getPageSearches(inventory.page - 1);
+                        getPageSearches(searches.page - 1);
                     }}
                 >
                     <div class="w-[75px] h-full flex items-center justify-center">
@@ -26,23 +26,23 @@ export const PageButtons: Component = () => {
                     </div>
                 </DynamicButton>
             </Show>
-            <For each={getButtons(inventory.maxPage, pageOffset())}>{(num) => (
+            <For each={getButtons(searches.maxPage, pageOffset())}>{(num) => (
                 <DynamicButton
-                    colourType={inventory.page === num ? ButtonType.STANDOUT : ButtonType.BACKING}
+                    colourType={searches.page === num ? ButtonType.STANDOUT : ButtonType.BACKING}
                     onClick={() => {
                         getPageSearches(num);
                     }}
                 >
                     <div class="w-full h-full flex items-center justify-center">
                         <div class="w-[12px] flex items-center justify-center">
-                            <p class={`${inventory.page === num ? "text-white" : "text-black"} select-none`}>{num}</p>
+                            <p class={`${searches.page === num ? "text-white" : "text-black"} select-none`}>{num}</p>
                         </div>
                     </div>
                 </DynamicButton>
             )}
             </For>
             <Show
-                when={inventory.maxPage > MAX_PAGE_BUTTONS && pageOffset() + MAX_PAGE_BUTTONS < inventory.maxPage}
+                when={searches.maxPage > MAX_PAGE_BUTTONS && pageOffset() + MAX_PAGE_BUTTONS < searches.maxPage}
                 fallback={
                     <div class="w-[107px] " />
                 }
@@ -51,7 +51,7 @@ export const PageButtons: Component = () => {
                     colourType={ButtonType.STANDOUT}
                     onClick={() => {
                         setPageOffset(prev => prev + 1);
-                        getPageSearches(inventory.page + 1);
+                        getPageSearches(searches.page + 1);
                     }}
                 >
                     <div class="w-[75px] h-full flex items-center justify-center">

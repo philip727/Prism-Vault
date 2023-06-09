@@ -1,27 +1,14 @@
-import { Component as SComponent, createEffect, For, Match, Show, Switch } from "solid-js"
-import { cleanWikiaThumbnail, isItemWithoutComponents, isItemWithoutDescription, Item, itemHasTradableParts, ProductCategory } from "../../scripts/inventory";
+import { Component as SComponent, For, Match, onMount, Show, Switch } from "solid-js"
+import { determineItemPicture, isItemWithoutComponents, isItemWithoutDescription, Item, itemHasTradableParts, ProductCategory } from "../../scripts/inventory";
 import { itemShownOnModal, isItemModalOpen, setIsItemModalOpen } from "../../stores/itemModal"
-import { getComponentPlatinumPrice, getSingleItemPlatinumPrice, parts, setParts } from "../../stores/partCache";
+import { getComponentPlatinumPrice, grabQuantitiesFromComponents, getSingleItemPlatinumPrice, parts, setParts } from "../../stores/partCache";
 import './ItemModal.scss'
 import { PartShowcase } from "./__itemModal/PartShowcase";
 import { SellShowcase } from "./__itemModal/SellShowcase";
 
 export const ItemModal: SComponent = () => {
-    createEffect(() => {
-        if (!isItemModalOpen()) {
-            return;
-        }
-
-        // An item without components, like a syndicate weapon
-        if (isItemWithoutComponents(itemShownOnModal())) {
-            setupSingleItemOnOpen(itemShownOnModal());
-            getSingleItemOnOpen(itemShownOnModal());
-            return;
-        }
-
-        // 90% of these are prime parts 
-        setupPartsOnOpen(itemShownOnModal());
-        getPartDetailsOnOpen(itemShownOnModal());
+    onMount(() => {
+        onModalOpen();
     })
 
     return (
@@ -40,22 +27,19 @@ export const ItemModal: SComponent = () => {
                         </div>
                     </div>
                     <article class="w-full flex justify-start items-center pt-4">
-                        <Switch fallback={
-                            <img class="w-32 h-32 bg-[var(--c5)] rounded-2xl ml-4" src={cleanWikiaThumbnail(itemShownOnModal().wikiaThumbnail)} />
-                        }>
-                            <Match when={itemShownOnModal().category == ProductCategory.MOD}>
-                                <img class="w-24 h-32 rounded-2xl ml-4" src={cleanWikiaThumbnail(itemShownOnModal().wikiaThumbnail)} />
-                            </Match>
-                        </Switch>
+                        <img
+                            class={`${itemShownOnModal().category == ProductCategory.MOD ? "w-24" : "w-32"} h-32 rounded-2xl ml-4`}
+                            src={determineItemPicture(itemShownOnModal())}
+                        />
                         <div class="h-28 flex flex-col items-start justify-start pl-4 pr-4">
                             <h1 class="text-white inline-block text-3xl font-bold">{itemShownOnModal().name}</h1>
                             <Switch fallback={
-                                <p class="text-white text-lg font-light leading-6 max-h-32 overflow-y-scroll description-scrollbar pr-2">{itemShownOnModal().description}</p>
+                                <p class="text-white text-lg font-light leading-6 max-h-32 overflow-y-scroll description-scrollbar pr-2">
+                                    {itemShownOnModal().description}
+                                </p>
                             }>
                                 <Match when={isItemWithoutDescription(itemShownOnModal())}>
-                                    <p
-                                        class="text-white text-lg font-light leading-6 max-h-32 overflow-y-scroll description-scrollbar pr-2"
-                                    >
+                                    <p class="text-white text-lg font-light leading-6 max-h-32 overflow-y-scroll description-scrollbar pr-2">
                                         {getModLastStat(itemShownOnModal())}
                                     </p>
                                 </Match>
@@ -83,6 +67,31 @@ export const ItemModal: SComponent = () => {
     )
 }
 
+export const onModalOpen = () => {
+    // An item without components, like a syndicate weapon
+    if (isItemWithoutComponents(itemShownOnModal())) {
+        setupSingleItemOnOpen(itemShownOnModal());
+        getSingleItemOnOpen(itemShownOnModal());
+        return;
+    }
+
+    // 90% of these are prime parts 
+    setupPartsOnOpen(itemShownOnModal());
+    getPartDetailsOnOpen(itemShownOnModal());
+
+
+    // Gets all the unique component names
+    const uniqueNames: string[] = []
+    for (let i = 0; i < itemShownOnModal().components.length; i++) {
+        const component = itemShownOnModal().components[i];
+        if (component.tradable) {
+            uniqueNames.push(component.uniqueName);
+        }
+    }
+
+    grabQuantitiesFromComponents(uniqueNames);
+}
+
 const getModLastStat = (item: Item): string => {
     return item.levelStats[item.levelStats.length - 1].stats[0] as string;
 }
@@ -95,7 +104,7 @@ const setupSingleItemOnOpen = (item: Item) => {
         return;
     }
 
-    setParts(item.uniqueName, { platinum: 0, quantity: 0, lastPlatinumUpdate: 0 })
+    setParts(item.uniqueName, { platinum: 0, quantity: 0, lastPlatinumUpdate: 0, lastQuantityUpdate: 0 })
 }
 
 // Sets up the components of an item in the part store by the components unique name
@@ -108,7 +117,7 @@ const setupPartsOnOpen = (item: Item) => {
             continue;
         }
 
-        setParts(component.uniqueName, { platinum: 0, quantity: 0, lastPlatinumUpdate: 0 });
+        setParts(component.uniqueName, { platinum: 0, quantity: 0, lastPlatinumUpdate: 0, lastQuantityUpdate: 0 });
     }
 }
 

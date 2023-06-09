@@ -24,8 +24,7 @@ func AddItem(uid uint32, itemp types.AddItemPayload, dbc *gorm.DB) error {
 }
 
 func GetComponents(uid uint32, itemp types.GetItemPayload, dbc *gorm.DB) (map[string]uint16, error) {
-	var strings map[string]uint16
-
+    strings := make(map[string]uint16)
 
 	for _, c := range itemp.UniqueNames {
 		var component db.Component

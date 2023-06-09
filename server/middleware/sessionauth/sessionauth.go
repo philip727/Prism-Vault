@@ -2,7 +2,6 @@ package sessionauth
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/philp727/warframe-app-server/controllers/usercontroller"
@@ -13,8 +12,6 @@ func New(cfg ...Config) fiber.Handler {
 	config := configDefault(cfg...)
 	return func(c *fiber.Ctx) error {
 		session := c.GetReqHeaders()["Session-Token"]
-
-        fmt.Println(fmt.Sprint("sesssion: ", session));
 
 		user, err := usercontroller.VerifySessionToken(session, config.DatabaseConnection)
 		if err != nil {

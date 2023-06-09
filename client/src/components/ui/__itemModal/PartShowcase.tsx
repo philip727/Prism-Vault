@@ -1,7 +1,7 @@
-import { Component as SComponent, createEffect, createSignal, mergeProps, Show } from "solid-js"
+import { Component as SComponent, createEffect, createSignal, Show } from "solid-js"
 import { Loading } from "../../../assets/Loading"
-import { Component, getComponentPicture, Item, Order } from "../../../scripts/inventory"
-import { parts } from "../../../stores/partCache"
+import { Component, getComponentPicture, Item } from "../../../scripts/inventory"
+import { parts, updateQuantityOfPart } from "../../../stores/partCache"
 import TooltipPrompter from "../../../window/__tooltip/TooltipPrompter"
 import InputField from "../../inputs/InputField"
 
@@ -12,22 +12,32 @@ type Props = {
 
 export const PartShowcase: SComponent<Props> = (props) => {
     const [platinum, setPlatinum] = createSignal(0);
+    let inputField!: HTMLInputElement;
 
     createEffect(() => {
-        if (typeof parts[props.component.uniqueName] == "undefined" || typeof parts[props.component.uniqueName].platinum == "undefined") {
+        if (typeof parts[props.component.uniqueName] == "undefined") {
             return;
         }
 
         setPlatinum(parts[props.component.uniqueName].platinum)
+        inputField.value = `${parts[props.component.uniqueName].quantity}`;
     })
 
     return (
         <div class="bg-[var(--c3)] rounded-md w-96 flex flex-row items-center">
             <TooltipPrompter prompt="Quantity">
                 <InputField
+                    ref={inputField}
                     value="0"
                     type="number"
                     class="!w-16 !h-8"
+                    onChange={(e) => {
+                        if (!e.currentTarget.value) {
+                            return; 
+                        } 
+
+                        updateQuantityOfPart(props.component.uniqueName, parseInt(e.currentTarget.value, 10));
+                    }}
                 />
             </TooltipPrompter>
             <img class="h-7 w-7 ml-2" src={getComponentPicture(props.item, props.component)} />

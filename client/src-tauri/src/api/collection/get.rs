@@ -1,22 +1,23 @@
 use std::{path::PathBuf, time::Duration};
 
 use reqwest::{header::CONTENT_TYPE, StatusCode};
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use tauri::{AppHandle, Wry, Manager};
-use tauri_plugin_store::{StoreCollection, with_store};
+use tauri::{AppHandle, Manager, Wry};
+use tauri_plugin_store::{with_store, StoreCollection};
 
 use crate::errors;
 
-
 #[derive(Serialize, Deserialize, Debug)]
 struct GetItemPayload {
-    pub components: Vec<String>
+    pub unique_names: Vec<String>,
 }
 
 #[tauri::command]
-pub async fn get_components(app_handle: AppHandle, components: Vec<String>) -> Result<Value, errors::Error> {
-    println!("{:?}", components);
+pub async fn get_components(
+    app_handle: AppHandle,
+    components: Vec<String>,
+) -> Result<Value, errors::Error> {
     let app = &app_handle;
     let stores = app.state::<StoreCollection<Wry>>();
     let path = PathBuf::from("data/user.data");
@@ -41,7 +42,9 @@ pub async fn get_components(app_handle: AppHandle, components: Vec<String>) -> R
         ));
     }
 
-    let payload = GetItemPayload { components };
+    let payload = GetItemPayload {
+        unique_names: components,
+    };
 
     let client = reqwest::Client::new();
     let request = client
@@ -60,6 +63,7 @@ pub async fn get_components(app_handle: AppHandle, components: Vec<String>) -> R
     let response = request.unwrap();
     let status = response.status();
 
+
     // Internal error logs
     if status == StatusCode::INTERNAL_SERVER_ERROR {
         return Err(errors::Error::InternalServer);
@@ -71,6 +75,8 @@ pub async fn get_components(app_handle: AppHandle, components: Vec<String>) -> R
     }
 
     let json = serde_json::from_str::<Value>(&response.text().await.unwrap()).unwrap();
+
+    println!("{:?}", json);
 
     Ok(json)
 }

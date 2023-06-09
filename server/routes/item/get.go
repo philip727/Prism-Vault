@@ -1,6 +1,8 @@
 package item
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/philp727/warframe-app-server/controllers/itemcontroller"
 	"github.com/philp727/warframe-app-server/types"
@@ -14,6 +16,8 @@ func getItemComponents(c *fiber.Ctx, dbc *gorm.DB) error {
 	if err := c.BodyParser(&payload); err != nil {
 		return c.SendStatus(400)
 	}
+
+    fmt.Println(payload)
 
 	userId, ok := c.Locals("userId").(uint32)
 	if !ok {
