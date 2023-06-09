@@ -37,7 +37,6 @@ func verifySession(c *fiber.Ctx, dbc *gorm.DB) error {
 			return c.Status(401).SendString(err.Error())
 		}
 
-
         return c.Status(500).SendString(err.Error())
 	}
 

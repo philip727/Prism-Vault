@@ -19,7 +19,7 @@ export const Tooltip: Component = () => {
         <Show when={showTooltip()}>
             <Motion.div
                 ref={tooltip}
-                class="absolute bg-[var(--c1)] px-2"
+                class="absolute bg-[var(--c1)] px-2 z-[9999]"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
             >

@@ -80,35 +80,33 @@ type LoginReturn struct {
 }
 
 // Matches the information in the db with the login data given
-func MatchInformation(lp types.LoginPayload, dbc *gorm.DB) (LoginReturn, error) {
+func LoginWithPayload(lp types.LoginPayload, dbc *gorm.DB) (LoginReturn, error) {
 	var user db.User
 	var sessionToken SessionToken
-
-	dbs := dbc.Session(&gorm.Session{})
 
 	switch matchIdentifier(lp.Identifier) {
 	case NONE:
 		return LoginReturn{user, sessionToken}, &PayloadError{Msg: "The given identifier is not a username or email"}
 	case EMAIL:
 		// Checks if the user table contains the email
-		err := db.ColumnExists("users", "email", lp.Identifier, dbs)
+		err := db.ColumnExists("users", "email", lp.Identifier, dbc)
 
 		if err != nil {
 			return LoginReturn{}, &db.ExistsError{Msg: fmt.Sprint("No user exists with the email, ", lp.Identifier)}
 		}
 
 		// Finds the user by email
-		user = searchUserByCol(lp.Identifier, "email", dbs)
+		user = searchUserByCol(lp.Identifier, "email", dbc)
 	case USERNAME:
 		// Checks if the user table contains the username
-		err := db.ColumnExists("users", "username", lp.Identifier, dbs)
+		err := db.ColumnExists("users", "username", lp.Identifier, dbc)
 
 		if err != nil {
 			return LoginReturn{}, &db.ExistsError{Msg: fmt.Sprint("No user exists with the username, ", lp.Identifier)}
 		}
 
 		// Finds the user by username
-		user = searchUserByCol(lp.Identifier, "username", dbs)
+		user = searchUserByCol(lp.Identifier, "username", dbc)
 	}
 
 	if !comparePasswordToHash(lp.Password, user.Password) {
@@ -116,7 +114,7 @@ func MatchInformation(lp types.LoginPayload, dbc *gorm.DB) (LoginReturn, error) 
 	}
 
 	sessionToken = createSessionToken(user)
-	if err := storeSession(sessionToken, user, dbs); err != nil {
+	if err := storeSession(sessionToken, user, dbc); err != nil {
 		return LoginReturn{}, err
 	}
 

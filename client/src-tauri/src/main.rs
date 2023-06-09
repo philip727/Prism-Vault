@@ -3,12 +3,10 @@
 
 mod api;
 mod warframe;
-use api::user;
+use api::{user, collection};
 use tauri_plugin_store::StoreBuilder;
 use warframe::items;
 mod errors;
-
-
 
 fn main() {
     tauri::Builder::default()
@@ -19,11 +17,19 @@ fn main() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            items::direct_item,
-            items::search_item,
+            // Warframe Items 
+            items::search_directly_for_item,
+            items::search_query,
+            items::market::get_order,
+
+            // User 
             user::register::register_user,
             user::login::login_user,
-            user::login::login_with_session
+            user::login::login_with_session,
+
+            // Collection
+            collection::add::add_item,
+            collection::get::get_components,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

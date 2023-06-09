@@ -15,8 +15,7 @@ func VerifySessionToken(t string, dbc *gorm.DB) (db.User, error) {
 		Token  string `json:"token"`
 	}
 
-	dbs := dbc.Session(&gorm.Session{})
-	result := dbs.Table("sessions").Where("token = ?", strings.Replace(t, "\"", "", -1)).Take(&payload)
+	result := dbc.Table("sessions").Where("token = ?", strings.Replace(t, "\"", "", -1)).Take(&payload)
 
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -30,7 +29,7 @@ func VerifySessionToken(t string, dbc *gorm.DB) (db.User, error) {
 		return user, &UnauthorizedError{Msg: "The token provided does not match any tokens"}
 	}
 
-	if err := dbs.Table("users").Where("id = ?", payload.UserId).Find(&user).Error; err != nil {
+	if err := dbc.Table("users").Where("id = ?", payload.UserId).Find(&user).Error; err != nil {
 		return user, err
 	}
 

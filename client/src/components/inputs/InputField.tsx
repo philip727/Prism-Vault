@@ -1,4 +1,4 @@
-import { Component, JSX } from "solid-js"
+import { Component, JSX, mergeProps } from "solid-js"
 import "./Inputs.scss"
 
 type Props = {
@@ -11,9 +11,11 @@ type Props = {
     promptDetails?: string[],
     onChange?: (e: Event & { target: HTMLInputElement, currentTarget: HTMLInputElement }) => void,
     onKeyUp?: (e: KeyboardEvent & { currentTarget: HTMLInputElement; target: Element; })  => any,
+    value?: string
 }
 
 const InputField: Component<Props> = (props) => {
+    const merged = mergeProps({value: ""}, props)
     return (
         <input 
             name={props.name}
@@ -23,6 +25,7 @@ const InputField: Component<Props> = (props) => {
             maxLength={props.maxLength} 
             onChange={props.onChange}
             onKeyUp={props.onKeyUp}
+            value={merged.value}
         />
     )
 }

@@ -1,5 +1,6 @@
 import { Motion } from "@motionone/solid"
-import { Component, JSX } from "solid-js"
+import { Component, createEffect, JSX, mergeProps } from "solid-js"
+import { createStore } from "solid-js/store"
 import "./Inputs.scss"
 
 export enum ButtonType {
@@ -15,19 +16,26 @@ type Props = {
 }
 
 const Button: Component<Props> = (props) => {
-    const colours = {
-        backgroundClass: "--g1",
-    }
+    const merged = mergeProps(props)
+    const [colours, setColours] = createStore({backgroundClass: "--g1"})
 
     // Different types of buttons and their colours
-    switch (props.colourType) {
-        case ButtonType.BACKING:
-            colours.backgroundClass = "--g1";
-            break;
-        case ButtonType.STANDOUT:
-            colours.backgroundClass = "--c1";
-            break;
+    const updateColour = (colour: ButtonType) => {
+        switch (colour) {
+            case ButtonType.BACKING:
+                setColours("backgroundClass", "--g1");
+                break;
+            case ButtonType.STANDOUT:
+                setColours("backgroundClass", "--c1");
+                break;
+        }
     }
+
+    createEffect(() => {
+        updateColour(merged.colourType);
+    })
+
+    updateColour(merged.colourType);
 
     return (
         <Motion.button

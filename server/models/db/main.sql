@@ -18,6 +18,17 @@ CREATE TABLE sessions (
 			ON DELETE CASCADE
 );
 
+CREATE TABLE components (
+	id INT AUTO_INCREMENT PRIMARY KEY NOT NULL UNIQUE,
+    unique_name VARCHAR(512) NOT NULL UNIQUE,
+    quantity INT UNSIGNED NOT NULL,
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id)
+		REFERENCES users(id)
+			ON UPDATE CASCADE
+            ON DELETE CASCADE
+);
+
 INSERT INTO users (username, email, password) VALUES ("admin", "admin@gmail.com", "aaaa");
 
 DELETE FROM sessions WHERE sessions.user_id = 2;
@@ -26,4 +37,4 @@ SELECT * FROM sessions;
 
 SELECT * FROM sessions WHERE token = "2384ea4d5d8598cb3a02c7f092fc84664681ffb93103ff380dc2b6c2512cb842";
 
-SELECT * FROM users;
+SELECT * FROM components;
