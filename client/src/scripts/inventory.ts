@@ -14,6 +14,7 @@ export type Item = {
     tradable: boolean,
     components: Array<Component>
     imageName: string,
+    excludeFromCodex: boolean,
     wikiaThumbnail: string,
     [key: string]: any,
 }
@@ -25,6 +26,7 @@ export const newItem = (): Item => {
         isPrime: false,
         category: "Unknown",
         uniqueName: "Unknown",
+        excludeFromCodex: false,
         tradable: false,
         imageName: "",
         components: [],

@@ -16,8 +16,7 @@ export const [pageOffset, setPageOffset] = createSignal(0);
 
 export const updateSearches = (items: Array<Item>, initialSearchTime: number) => {
     // If a request finishes after the user has already began searching 
-    // for something else, then we don't want it to set the store
-    console.log(initialSearchTime, searches.lastSearch);
+    // for something new, then we don't want it to set the store
     if (initialSearchTime < searches.lastSearch) {
         return;
     }
@@ -37,7 +36,6 @@ export const updateSearches = (items: Array<Item>, initialSearchTime: number) =>
         return;
     }
 
-    // Makes sure we are showing the correct stuff on search :D
     setSearches("lastSearch", initialSearchTime);
     setSearches("searches", items);
     setSearches("maxPage", 1)

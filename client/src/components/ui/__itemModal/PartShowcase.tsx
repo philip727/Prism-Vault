@@ -47,7 +47,7 @@ export const PartShowcase: SComponent<Props> = (props) => {
                     fallback={<Loading width="32" height="32" />}
                 >
                     <TooltipPrompter prompt="Lowest Platinum Price">
-                        <p class="text-white font-medium mr-2">{platinum()}</p>
+                        <p class="text-white font-medium mr-2">{platinum() === 99999999 ? "No price found" : platinum()}</p>
                     </TooltipPrompter>
                 </Show>
                 <img class="w-4 h-4 mr-2" src="warframe/platinum.webp" />

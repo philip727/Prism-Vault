@@ -56,7 +56,10 @@ const clearItemArray = (arr: Array<Item>) => {
     for (let i = 0; i < arr.length; i++) {
         const item = arr[i];
 
-        if (item.category == "Skins" || item.category == "Misc" || !isItemTradableOrHasTradableParts(item)) {
+        if (item.category == "Skins" 
+            || item.category == "Misc" 
+            || !isItemTradableOrHasTradableParts(item)
+            || item.excludeFromCodex) {
             continue;
         }
         newArr.push(item);

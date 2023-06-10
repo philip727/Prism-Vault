@@ -22,7 +22,7 @@ export const ItemModal: SComponent = () => {
                             <button class="toolbar-icon px-2 h-6" onClick={() => {
                                 setIsItemModalOpen(false);
                             }}>
-                                <p class="text-white">{"->"}</p>
+                                <p class="text-white select-none">{"->"}</p>
                             </button>
                         </div>
                     </div>
