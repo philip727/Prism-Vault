@@ -3,21 +3,21 @@ import { createStore } from "solid-js/store";
 import { Item } from "../scripts/inventory";
 
 export type InventorySearch = {
-    searches: Array<Item>,
-    lastSearch: number,
+    items: Array<Item>,
+    lastSearchTime: number,
     page: number,
     maxPage: number,
 }
 
 let storedSearches: Array<Item> = [];
 const MAX_ITEMS_PER_PAGE = 12;
-export const [searches, setSearches] = createStore<InventorySearch>({ searches: [], lastSearch: 0, page: 1, maxPage: 1 })
+export const [searches, setSearches] = createStore<InventorySearch>({ items: [], lastSearchTime: 0, page: 1, maxPage: 1 })
 export const [pageOffset, setPageOffset] = createSignal(0);
 
 export const updateSearches = (items: Array<Item>, initialSearchTime: number) => {
     // If a request finishes after the user has already began searching 
     // for something new, then we don't want it to set the store
-    if (initialSearchTime < searches.lastSearch) {
+    if (initialSearchTime < searches.lastSearchTime) {
         return;
     }
 
@@ -30,14 +30,14 @@ export const updateSearches = (items: Array<Item>, initialSearchTime: number) =>
         setSearches("maxPage", amountOfPages)
 
         storedSearches = [...items]
-        setSearches("searches", storedSearches.slice(0, MAX_ITEMS_PER_PAGE));
+        setSearches("items", storedSearches.slice(0, MAX_ITEMS_PER_PAGE));
 
-        setSearches("lastSearch", initialSearchTime);
+        setSearches("lastSearchTime", initialSearchTime);
         return;
     }
 
-    setSearches("lastSearch", initialSearchTime);
-    setSearches("searches", items);
+    setSearches("lastSearchTime", initialSearchTime);
+    setSearches("items", items);
     setSearches("maxPage", 1)
 }
 
@@ -51,6 +51,6 @@ export const getPageSearches = (page: number) => {
         }
         itemsOnPage.push(storedSearches[i + startingIndex])
     }
-    setSearches("searches", itemsOnPage);
+    setSearches("items", itemsOnPage);
     setSearches("page", page);
 }

@@ -9,7 +9,7 @@ import (
 )
 
 func AddItem(uid uint32, itemp types.AddItemPayload, dbc *gorm.DB) error {
-	component := db.Component{UserId: uint32(uid), UniqueName: itemp.UniqueName, Quantity: itemp.Quantity}
+	component := db.Component{UserId: uint32(uid), UniqueName: itemp.UniqueName, Quantity: itemp.Quantity, ItemName: itemp.ItemName }
 
 	result := dbc.Table("components").Where("user_id = ? AND unique_name = ?", uid, itemp.UniqueName).Omit("id", "user_id", "unique_name").Updates(&component)
 	if result.Error != nil {
@@ -41,4 +41,33 @@ func GetComponents(uid uint32, itemp types.GetItemPayload, dbc *gorm.DB) (map[st
 	}
 
 	return strings, nil
+}
+
+func stringInSlice(s string, sl []string) bool {
+    for _, e := range sl {
+        if e == s {
+            return true
+        }
+    }
+
+    return false
+}
+
+func GetAllUserItems(uid uint32, dbc *gorm.DB) ([]string, error) {
+    var components []db.Component 
+    var itemNames []string
+
+    result := dbc.Table("components").Where("user_id = ?", uid).Find(&components);
+    if result.Error != nil {
+        return itemNames, result.Error
+    }
+
+    for _, c := range components {
+        if len(c.ItemName) == 0 || stringInSlice(c.ItemName, itemNames) {
+            continue
+        }
+        itemNames = append(itemNames, c.ItemName) 
+    }
+
+    return itemNames, nil    
 }

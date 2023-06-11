@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api"
-import { Component as SComponent, For, Show } from "solid-js"
+import { Component as SComponent, createSignal, For, Match, onMount, Show, Switch } from "solid-js"
+import Logo from "../../assets/Logo"
 import InputField from "../../components/inputs/InputField"
 import { isItemTradableOrHasTradableParts, Item } from "../../scripts/inventory"
 import unwrapPromise from "../../scripts/utils/unwrapPromise"
@@ -7,19 +8,29 @@ import { searches, updateSearches } from "../../stores/search"
 import './Inventory.scss'
 import { Card } from "./__inventory/Card"
 import { PageButtons } from "./__inventory/PageButtons"
+import { ItemSearch } from "./__inventory/__views/ItemSearch"
 
 
 export const Inventory: SComponent = () => {
+    let searchBar!: HTMLInputElement;
+    const [currentError, setCurrentError] = createSignal<null | string>(null);
+
+
+    // Handles the search when we start to input
     const handleChange = async (e: KeyboardEvent & { currentTarget: HTMLInputElement; target: Element; }) => {
+        setCurrentError(null);
         let searchTime = Date.now();
+
+        // If the search is empty then don't search for anything
         if (e.currentTarget.value.length == 0) {
-            updateSearches([], searchTime);
+            grabYourItems();
             return;
         }
 
         let { err, result } = await unwrapPromise<Array<Item>, string>(invoke("search_query", { query: e.currentTarget.value }));
+        setCurrentError(err);
 
-        if (!result) return;
+        if (err || !result) return;
         result = clearItemArray(result);
 
         console.log(result);
@@ -27,26 +38,59 @@ export const Inventory: SComponent = () => {
         updateSearches(result, searchTime)
     }
 
+    // Gets the items we have already got some of
+    onMount(() => {
+        grabYourItems();
+    })
+
     return (
         <article>
             <div class="w-screen flex flex-row justify-center">
                 <div class="w-1/3" />
                 <div class="w-1/3 flex flex-row justify-center">
-                    <InputField name="part" type="text" placeholder="search for parts" onKeyUp={handleChange} />
+                    <InputField
+                        ref={searchBar}
+                        name="part"
+                        type="text"
+                        placeholder="search for parts"
+                        onKeyUp={handleChange}
+                    />
                 </div>
                 <div class="w-1/3" />
             </div>
             <div class="w-screen h-[420px]">
-                <ul class="w-screen items-grid gap-6 mt-6 px-6">
-                    <For each={searches.searches}>{(search) => (
-                        <Card item={search} />
-                    )}
-                    </For>
-                </ul>
+                <Switch
+                    fallback={
+                        <>
+                            <h1 class="text-white text-2xl font-semibold w-full text-center mt-8">Your Items</h1>
+                            <ItemSearch />
+                        </>
+                    }
+                >
+                    <Match when={searches.items.length > 0 && searchBar.value.length > 0}>
+                        <ItemSearch />
+                    </Match>
+                    <Match when={searches.items.length == 0 && searchBar.value.length > 0}>
+                        <div class="h-full flex flex-col justify-center items-center gap-6 pt-12">
+                            <Logo />
+                            <p class="text-white text-2xl font-medium">
+                                {`No results for \"${searchBar.value}\" Try searching for something else`}
+                            </p>
+                        </div>
+                    </Match>
+                    <Match when={currentError() != null}>
+                        <div class="h-full flex flex-col justify-center items-center gap-6 pt-12">
+                            <Logo />
+                            <p class="text-white text-2xl font-medium">
+                                {currentError()}
+                            </p>
+                        </div>
+                    </Match>
+                </Switch>
+                <Show when={searches.maxPage > 1}>
+                    <PageButtons />
+                </Show>
             </div>
-            <Show when={searches.maxPage > 1}>
-                <PageButtons />
-            </Show>
         </article>
     )
 }
@@ -56,8 +100,8 @@ const clearItemArray = (arr: Array<Item>) => {
     for (let i = 0; i < arr.length; i++) {
         const item = arr[i];
 
-        if (item.category == "Skins" 
-            || item.category == "Misc" 
+        if (item.category == "Skins"
+            || item.category == "Misc"
             || !isItemTradableOrHasTradableParts(item)
             || item.excludeFromCodex) {
             continue;
@@ -66,4 +110,13 @@ const clearItemArray = (arr: Array<Item>) => {
     }
 
     return newArr;
+}
+
+const grabYourItems = async () => {
+    const { err, result } = await unwrapPromise<Array<Item>, string>(invoke("get_owned_items"));
+
+    if (err || !result) return;
+
+    let searchTime = Date.now();
+    updateSearches(result, searchTime);
 }

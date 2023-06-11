@@ -1,6 +1,7 @@
 import { Component, createEffect, createSignal, Show } from "solid-js"
 import { Loading } from "../../../assets/Loading"
 import { Item } from "../../../scripts/inventory"
+import { setTotalPiecePlatinumCount } from "../../../stores/itemModal"
 import { parts, updateQuantityOfPart } from "../../../stores/partCache"
 import TooltipPrompter from "../../../window/__tooltip/TooltipPrompter"
 import InputField from "../../inputs/InputField"
@@ -11,6 +12,7 @@ type Props = {
 
 export const SellShowcase: Component<Props> = (props) => {
     const [platinum, setPlatinum] = createSignal(0);
+    let previousTotal = 0;
     let inputField!: HTMLInputElement;
 
     createEffect(() => {
@@ -22,6 +24,11 @@ export const SellShowcase: Component<Props> = (props) => {
         inputField.value = `${parts[props.item.uniqueName].quantity}`;
     })
 
+    createEffect(() => {
+        let totalPlatinum = platinum() * parts[props.item.uniqueName].quantity;
+        setTotalPiecePlatinumCount(prev => (prev + totalPlatinum) - previousTotal);
+        previousTotal = totalPlatinum;
+    })
 
     return (
         <div class="bg-[var(--c3)] rounded-md w-96 flex flex-row items-center">
@@ -36,7 +43,7 @@ export const SellShowcase: Component<Props> = (props) => {
                             return; 
                         } 
 
-                        updateQuantityOfPart(props.item.uniqueName, parseInt(e.currentTarget.value, 10));
+                        updateQuantityOfPart(props.item.uniqueName, parseInt(e.currentTarget.value, 10), props.item.name);
                     }}
                 />
             </TooltipPrompter>

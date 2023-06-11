@@ -1,14 +1,21 @@
-import { Component as SComponent, For, Match, onMount, Show, Switch } from "solid-js"
+import { Component as SComponent, createEffect, createSignal, For, Match, onMount, Show, Switch } from "solid-js"
 import { determineItemPicture, isItemWithoutComponents, isItemWithoutDescription, Item, itemHasTradableParts, ProductCategory } from "../../scripts/inventory";
-import { itemShownOnModal, isItemModalOpen, setIsItemModalOpen } from "../../stores/itemModal"
+import { itemShownOnModal, isItemModalOpen, setIsItemModalOpen, setTotalPiecePlatinumCount, totalPiecePlatinumCount, modalPage, ModalPage } from "../../stores/itemModal"
 import { getComponentPlatinumPrice, grabQuantitiesFromComponents, getSingleItemPlatinumPrice, parts, setParts } from "../../stores/partCache";
 import './ItemModal.scss'
 import { PartShowcase } from "./__itemModal/PartShowcase";
 import { SellShowcase } from "./__itemModal/SellShowcase";
+import { TabButton } from "./__itemModal/TabButton";
 
 export const ItemModal: SComponent = () => {
     onMount(() => {
         onModalOpen();
+        setTotalPiecePlatinumCount(0);
+    })
+
+    createEffect(() => {
+        modalPage();
+        setTotalPiecePlatinumCount(0);
     })
 
     return (
@@ -47,17 +54,42 @@ export const ItemModal: SComponent = () => {
                         </div>
                     </article>
                     <div class="w-full flex flex-col gap-2 mt-4 ml-4">
-                        <h1 class="text-white text-2xl font-semibold">Your Stock</h1>
+                        <ul class="h-6 flex flex-row bg-[var(--c5)] w-96">
+                            <TabButton
+                                text="Stock"
+                                img="dashboard/section-bar/inventory-logo.svg"
+                                page={ModalPage.STOCK}
+                            />
+                            <TabButton
+                                text="Orders"
+                                img="dashboard/section-bar/market-logo.svg"
+                                page={ModalPage.ORDERS}
+                            />
+                            <TabButton
+                                text="Drops"
+                                img="dashboard/section-bar/market-logo.svg"
+                                page={ModalPage.DROPS}
+                            />
+                        </ul>
                         <Switch>
-                            <Match when={isItemWithoutComponents(itemShownOnModal())}>
-                                <SellShowcase item={itemShownOnModal()} />
-                            </Match>
-                            <Match when={itemHasTradableParts(itemShownOnModal())}>
-                                <For each={itemShownOnModal().components}>{(component) => (
-                                    <Show when={component.tradable}>
-                                        <PartShowcase item={itemShownOnModal()} component={component} />
-                                    </Show>
-                                )}</For>
+                            <Match when={modalPage() == ModalPage.STOCK}>
+                                <Switch>
+                                    <Match when={isItemWithoutComponents(itemShownOnModal())}>
+                                        <SellShowcase item={itemShownOnModal()} />
+                                    </Match>
+                                    <Match when={itemHasTradableParts(itemShownOnModal())}>
+                                        <For each={itemShownOnModal().components}>{(component) => (
+                                            <Show when={component.tradable}>
+                                                <PartShowcase item={itemShownOnModal()} component={component} />
+                                            </Show>
+                                        )}</For>
+                                    </Match>
+                                </Switch>
+                                <div class="bg-[var(--c5)] rounded-md w-96 flex flex-row items-center justify-end">
+                                    <p class="text-white text-base font-light w-full text-left pl-2">Total Piece Platinum Count</p>
+                                    <p class="text-white font-medium mr-2">{totalPiecePlatinumCount()}</p>
+                                    <img class="w-4 h-4 mr-2" src="warframe/platinum.webp" />
+                                </div>
                             </Match>
                         </Switch>
                     </div>
@@ -72,6 +104,7 @@ export const onModalOpen = () => {
     if (isItemWithoutComponents(itemShownOnModal())) {
         setupSingleItemOnOpen(itemShownOnModal());
         getSingleItemOnOpen(itemShownOnModal());
+        grabQuantitiesFromComponents([itemShownOnModal().uniqueName]);
         return;
     }
 

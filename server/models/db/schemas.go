@@ -18,7 +18,7 @@ func (u User) ToSafe() User {
 type Session struct {
 	Id     uint32 `json:"id" gorm:"primaryKey"`
 	Token  string `json:"token"`
-	Expiry int64 `json:"expiry"`
+	Expiry int64  `json:"expiry"`
 	UserId uint32 `json:"user_id"`
 }
 
@@ -27,4 +27,5 @@ type Component struct {
 	UniqueName string `json:"unique_name"`
 	Quantity   uint16 `json:"quantity"`
 	UserId     uint32 `json:"user_id"`
+	ItemName   string `json:"item_name"`
 }

@@ -1,6 +1,7 @@
 import { Component as SComponent, createEffect, createSignal, Show } from "solid-js"
 import { Loading } from "../../../assets/Loading"
 import { Component, getComponentPicture, Item } from "../../../scripts/inventory"
+import { setTotalPiecePlatinumCount } from "../../../stores/itemModal"
 import { parts, updateQuantityOfPart } from "../../../stores/partCache"
 import TooltipPrompter from "../../../window/__tooltip/TooltipPrompter"
 import InputField from "../../inputs/InputField"
@@ -12,6 +13,7 @@ type Props = {
 
 export const PartShowcase: SComponent<Props> = (props) => {
     const [platinum, setPlatinum] = createSignal(0);
+    let previousTotal = 0;
     let inputField!: HTMLInputElement;
 
     createEffect(() => {
@@ -21,6 +23,12 @@ export const PartShowcase: SComponent<Props> = (props) => {
 
         setPlatinum(parts[props.component.uniqueName].platinum)
         inputField.value = `${parts[props.component.uniqueName].quantity}`;
+    })
+
+    createEffect(() => {
+        let totalPlatinum = platinum() * parts[props.component.uniqueName].quantity;
+        setTotalPiecePlatinumCount(prev => (prev + totalPlatinum) - previousTotal);
+        previousTotal = totalPlatinum;
     })
 
     return (
@@ -33,10 +41,10 @@ export const PartShowcase: SComponent<Props> = (props) => {
                     class="!w-16 !h-8"
                     onChange={(e) => {
                         if (!e.currentTarget.value) {
-                            return; 
-                        } 
+                            return;
+                        }
 
-                        updateQuantityOfPart(props.component.uniqueName, parseInt(e.currentTarget.value, 10));
+                        updateQuantityOfPart(props.component.uniqueName, parseInt(e.currentTarget.value, 10), props.item.name);
                     }}
                 />
             </TooltipPrompter>

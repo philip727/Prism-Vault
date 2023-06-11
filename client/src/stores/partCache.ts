@@ -94,8 +94,8 @@ export const getComponentPlatinumPrice = async (item: Item, component: Component
     setParts(component.uniqueName, "lastPlatinumUpdate", Date.now() / 1000); // Current Unix Time
 }
 
-export const updateQuantityOfPart = async (uniqueName: string, quantity: number) => {
-    let { err } = await unwrapPromise<Order, string>(invoke("add_item", { uniqueName: uniqueName, quantity: quantity }));
+export const updateQuantityOfPart = async (uniqueName: string, quantity: number, itemName: string) => {
+    let { err } = await unwrapPromise<Order, string>(invoke("add_item", { uniqueName: uniqueName, quantity: quantity, itemName: itemName }));
     if (err) {
         createInWindowNotification({
             text: err,

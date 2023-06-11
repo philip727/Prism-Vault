@@ -23,6 +23,7 @@ CREATE TABLE components (
     unique_name VARCHAR(512) NOT NULL UNIQUE,
     quantity INT UNSIGNED NOT NULL,
     user_id INT NOT NULL,
+    item_name VARCHAR(255) NOT NULL,
     FOREIGN KEY (user_id)
 		REFERENCES users(id)
 			ON UPDATE CASCADE

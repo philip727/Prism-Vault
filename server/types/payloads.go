@@ -14,9 +14,10 @@ type LoginPayload struct {
 
 type AddItemPayload struct {
 	UniqueName string `json:"unique_name"`
+	ItemName   string `json:"item_name"`
 	Quantity   uint16 `json:"quantity"`
 }
 
 type GetItemPayload struct {
-    UniqueNames []string `json:"unique_names"`
+	UniqueNames []string `json:"unique_names"`
 }

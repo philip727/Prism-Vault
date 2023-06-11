@@ -6,7 +6,7 @@ use std::{error, path::PathBuf, time::Duration};
 use tauri::{AppHandle, Manager, Wry};
 use tauri_plugin_store::{with_store, StoreCollection};
 
-use crate::errors;
+use crate::{errors, utils::grab_session_token};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct LoginPayload {
@@ -91,38 +91,13 @@ pub async fn login_user(app_handle: AppHandle, payload: LoginPayload) -> Result<
 // Tries to login with the session token provided
 #[tauri::command]
 pub async fn login_with_session(app_handle: AppHandle) -> Result<Value, errors::Error> {
-    let app = &app_handle;
-    let stores = app.state::<StoreCollection<Wry>>();
-    let path = PathBuf::from("data/user.data");
-
-    let mut key: Value = Default::default();
-
-    let try_grab_key = with_store(app.clone(), stores, path, |store| {
-        let try_grab = store.get("session".to_string());
-        if let None = try_grab {
-            return Err(tauri_plugin_store::Error::Serialize(Box::new(
-                NoSessionTokenError,
-            )));
-        }
-
-        key = try_grab.unwrap().clone();
-        Ok(())
-    });
-
-    if let Err(_) = try_grab_key {
-        return Err(errors::Error::SessionToken("<DS> Failed to grab session token from the user".to_string()));
-    }
-    
-    let session_login = SessionLoginPayload {
-        session_token: key.to_string(),
-    };
-
+    let key = grab_session_token(&app_handle)?;
     let client = reqwest::Client::new();
     let request = client
         .post("http://127.0.0.1:8080/user/verify")
         .timeout(Duration::from_secs(10))
         .header(CONTENT_TYPE, "application/json")
-        .json(&session_login)
+        .header("Session-Token", key)
         .send()
         .await;
 
