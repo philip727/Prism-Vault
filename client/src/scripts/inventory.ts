@@ -13,6 +13,8 @@ export type Item = {
     uniqueName: string,
     tradable: boolean,
     components: Array<Component>
+    imageName: string,
+    excludeFromCodex: boolean,
     wikiaThumbnail: string,
     [key: string]: any,
 }
@@ -24,7 +26,9 @@ export const newItem = (): Item => {
         isPrime: false,
         category: "Unknown",
         uniqueName: "Unknown",
+        excludeFromCodex: false,
         tradable: false,
+        imageName: "",
         components: [],
         wikiaThumbnail: ""
     }
@@ -42,6 +46,7 @@ export type Component = {
     drops: Array<Drop>,
     productCategory?: string,
     wikiaThumbnail?: string,
+    imageName: string,
     [key: string]: any,
 }
 
@@ -58,6 +63,7 @@ export type Order = {
     platinum: number
 }
 
+// Check if the item has tradable parts
 export const itemHasTradableParts = (item: Item): boolean => {
     if (!item.components || typeof item.components == "undefined") {
         return false;
@@ -73,88 +79,35 @@ export const itemHasTradableParts = (item: Item): boolean => {
     return false;
 }
 
+// Make sure the item is tradable in some way
 export const isItemTradableOrHasTradableParts = (item: Item): boolean => {
     return item.tradable || itemHasTradableParts(item);
 }
 
-const PART_PICTURES: { [key: string]: { [key: string]: string } } = {
-    BARREL: {
-        PRIME: "https://static.wikia.nocookie.net/warframe/images/2/2f/GenericGunPrimeBarrel.png",
-        NORMAL: "https://static.wikia.nocookie.net/warframe/images/a/a1/Barrel.png",
-    },
-    RECEIVER: {
-        PRIME: "https://static.wikia.nocookie.net/warframe/images/0/03/GenericGunPrimeReceiver.png",
-        NORMAL: "https://static.wikia.nocookie.net/warframe/images/b/bc/Receiver.png",
-    },
-    STOCK: {
-        PRIME: "https://static.wikia.nocookie.net/warframe/images/6/66/GenericGunPrimeStock.png",
-        NORMAL: "https://static.wikia.nocookie.net/warframe/images/c/c7/Stock.png",
-    },
-    BLADE: {
-        PRIME: "https://static.wikia.nocookie.net/warframe/images/f/f8/GenericWeaponPrimeBlade.png",
-        NORMAL: "https://static.wikia.nocookie.net/warframe/images/f/f8/GenericWeaponPrimeBlade.png",
-    },
-    HILT: {
-        PRIME: "https://static.wikia.nocookie.net/warframe/images/e/ea/GenericWeaponPrimeHilt.png",
-        NORMAL: "https://static.wikia.nocookie.net/warframe/images/e/ea/GenericWeaponPrimeHilt.png",
-    },
-    LATCH: {
-        PRIME: "https://static.wikia.nocookie.net/warframe/images/f/ff/GenericComponentPrimeLatch.png",
-        NORMAL: "https://static.wikia.nocookie.net/warframe/images/f/ff/GenericComponentPrimeLatch.png"
-    },
-    PLUG: {
-        PRIME: "https://static.wikia.nocookie.net/warframe/images/b/b3/GenericComponentPrimePlug.png",
-        NORMAL: "https://static.wikia.nocookie.net/warframe/images/b/b3/GenericComponentPrimePlug.png",
-    }
-}
-
+// Gets the component picture, if it's a blue print then we just want the wikia thumbnail
 export const getComponentPicture = (item: Item, component: Component): string => {
-    if (component.productCategory === "Pistols") {
-        return cleanWikiaThumbnail(component.wikiaThumbnail as string);
-    }
-
-
-    let type = "NORMAL"
-    if (item.isPrime) {
-        type = "PRIME";
-    }
-
     switch (component.name) {
-        case "Head":
-            return PART_PICTURES.BLADE[type];
-        case "Barrel":
-            return PART_PICTURES.BARREL[type];
-        case "Receiver":
-            return PART_PICTURES.RECEIVER[type];
-        case "Stock":
-            return PART_PICTURES.STOCK[type];
-        case "Blade":
-            return PART_PICTURES.BLADE[type];
-        case "Hilt":
-            return PART_PICTURES.HILT[type];
-        case "Handle":
-            if (item.category == "Melee") {
-                return PART_PICTURES.HILT[type]
-            }
-            return PART_PICTURES.LATCH[type];
-        case "Lower Limb":
-            return PART_PICTURES.BLADE[type]
-        case "Upper Limb":
-            return PART_PICTURES.BLADE[type]
-        case "Grip":
-            return PART_PICTURES.LATCH[type]
-        case "String":
-            return PART_PICTURES.STOCK[type]
-        case "Link":
-            return PART_PICTURES.PLUG[type]
         case "Blueprint":
             return cleanWikiaThumbnail(item.wikiaThumbnail);
         default:
-            return "logos/wf-comp-logo.svg"
+            return `https://cdn.warframestat.us/img/${component.imageName}`
     }
 
 }
 
+// Gets the picture of the item, the wikia thumbnails are better for mods
+export const determineItemPicture = (item: Item | Component): string => {
+    if (item.category == ProductCategory.MOD) {
+        if (!item.wikiaThumbnail || typeof item.wikiaThumbnail == "undefined") {
+            return `https://cdn.warframestat.us/img/${item.imageName}`
+        }
+        return cleanWikiaThumbnail(item.wikiaThumbnail);
+    }
+
+    return `https://cdn.warframestat.us/img/${item.imageName}`
+}
+
+    // Cleans the wikiathumbnail
 export const cleanWikiaThumbnail = (url: string): string => {
     if (typeof url == "undefined") {
         return "./logos/wf-comp-logo.svg"
@@ -174,6 +127,10 @@ export const isItemWithoutDescription = (item: Item): boolean => {
 
 // Things like mods or syndicate weapons or arcanes
 export const isItemWithoutComponents = (item: Item): boolean => {
-    return item.category === ProductCategory.MOD || item.category === ProductCategory.ARCANE || item.category === ProductCategory.RELIC || typeof item.components == "undefined";
+    return item.category === ProductCategory.MOD ||
+        item.category === ProductCategory.ARCANE ||
+        item.category === ProductCategory.RELIC ||
+        typeof item.components == "undefined";
 }
+
 

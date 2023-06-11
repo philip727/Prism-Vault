@@ -1,21 +1,25 @@
-use std::{path::PathBuf, time::Duration};
+use std::time::Duration;
 
 use reqwest::{header::CONTENT_TYPE, StatusCode};
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
-use tauri::{AppHandle, Manager, Wry};
-use tauri_plugin_store::{with_store, StoreCollection};
+use tauri::AppHandle;
 
-use crate::errors;
+use crate::{errors, utils::grab_session_token};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AddItemPayload {
     pub unique_name: String,
     pub quantity: isize,
+    pub item_name: String,
 }
 
 #[tauri::command]
-pub async fn add_item(app_handle: AppHandle, unique_name: String, quantity: isize) -> Result<(), errors::Error> {
+pub async fn add_item(
+    app_handle: AppHandle,
+    unique_name: String,
+    quantity: isize,
+    item_name: String,
+) -> Result<(), errors::Error> {
     if quantity < 0 {
         return Err(errors::Error::InvalidInput(
             "You have provided a quantity below 0, this is not possible".to_string(),
@@ -28,32 +32,12 @@ pub async fn add_item(app_handle: AppHandle, unique_name: String, quantity: isiz
         ));
     }
 
-
-    let app = &app_handle;
-    let stores = app.state::<StoreCollection<Wry>>();
-    let path = PathBuf::from("data/user.data");
-
-    let mut key: Value = Default::default();
-
-    let try_grab_key = with_store(app.clone(), stores, path, |store| {
-        let try_grab = store.get("session".to_string());
-        if let None = try_grab {
-            return Err(tauri_plugin_store::Error::Serialize(Box::new(
-                errors::Error::SessionToken("No session token".to_string()),
-            )));
-        }
-
-        key = try_grab.unwrap().clone();
-        Ok(())
-    });
-
-    if let Err(_) = try_grab_key {
-        return Err(errors::Error::SessionToken(
-            "<DS> Failed to grab session token from the user".to_string(),
-        ));
-    }
-
-    let payload = AddItemPayload { unique_name, quantity };
+    let key = grab_session_token(&app_handle)?;
+    let payload = AddItemPayload {
+        unique_name,
+        quantity,
+        item_name,
+    };
 
     let client = reqwest::Client::new();
     let request = client

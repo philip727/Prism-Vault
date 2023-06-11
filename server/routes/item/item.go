@@ -24,6 +24,12 @@ func CreateRoute(f *fiber.App, dbc *gorm.DB) {
 	item.Post("/get",
 		sessionauth.New(sessionauth.Config{DatabaseConnection: dbc}),
 		func(c *fiber.Ctx) error {
-			return addItem(c, dbc)
+			return getItemComponents(c, dbc)
+		})
+
+	item.Get("/get-inventory",
+		sessionauth.New(sessionauth.Config{DatabaseConnection: dbc}),
+		func(c *fiber.Ctx) error {
+			return getAllOwnedItems(c, dbc)
 		})
 }

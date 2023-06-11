@@ -1,6 +1,6 @@
 import { Motion } from "@motionone/solid"
 import { Component } from "solid-js"
-import { cleanWikiaThumbnail, Item, ProductCategory } from "../../../scripts/inventory"
+import { cleanWikiaThumbnail, determineItemPicture, Item, ProductCategory } from "../../../scripts/inventory"
 import { setIsItemModalOpen, updateItemDetailsOnModal } from "../../../stores/itemModal"
 import TooltipPrompter from "../../../window/__tooltip/TooltipPrompter"
 
@@ -17,12 +17,15 @@ export const Card: Component<Props> = (props) => {
                 press={{ scale: 0.95 }}
                 transition={{ duration: 0.3 }}
                 onClick={() => {
-                    setIsItemModalOpen(true);
                     updateItemDetailsOnModal(props.item);
+                    setIsItemModalOpen(true);
                 }}
             >
                 <div class="w-56 bg-[var(--c3)] h-full flex justify-evenly items-center">
-                    <img class={`${props.item.category == ProductCategory.MOD ? "w-12" : "w-16"} h-16 select-none`} src={cleanWikiaThumbnail(props.item.wikiaThumbnail)} />
+                    <img
+                        class={`${props.item.category == ProductCategory.MOD ? "w-12" : "w-16"} h-16 select-none`}
+                        src={determineItemPicture(props.item)}
+                    />
                     <p class="text-white font-medium text-center max-w-[8rem]">{props.item.name}</p>
                 </div>
                 <div class="w-16">

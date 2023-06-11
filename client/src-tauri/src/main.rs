@@ -7,6 +7,7 @@ use api::{user, collection};
 use tauri_plugin_store::StoreBuilder;
 use warframe::items;
 mod errors;
+mod utils;
 
 fn main() {
     tauri::Builder::default()
@@ -30,6 +31,7 @@ fn main() {
             // Collection
             collection::add::add_item,
             collection::get::get_components,
+            collection::get::get_owned_items,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -2,6 +2,7 @@ import { Component, JSX, mergeProps } from "solid-js"
 import "./Inputs.scss"
 
 type Props = {
+    ref?: HTMLInputElement,
     placeholder?: string,
     name?: string,
     type?: string,
@@ -18,6 +19,7 @@ const InputField: Component<Props> = (props) => {
     const merged = mergeProps({value: ""}, props)
     return (
         <input 
+            ref={props.ref}
             name={props.name}
             placeholder={props.placeholder}
             type={props.type}

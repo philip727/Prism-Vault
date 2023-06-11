@@ -27,3 +27,19 @@ func getItemComponents(c *fiber.Ctx, dbc *gorm.DB) error {
 
 	return c.JSON(strings)
 }
+
+func getAllOwnedItems(c *fiber.Ctx, dbc *gorm.DB) error {
+	c.Accepts("application/json")
+
+	userId, ok := c.Locals("userId").(uint32)
+	if !ok {
+		return c.Status(500).SendString("Internal Server Error when trying to parse the user id from a session token")
+	}
+
+    items, err := itemcontroller.GetAllUserItems(userId, dbc)
+    if err != nil {
+        return c.Status(500).SendString(err.Error())
+    }
+
+	return c.JSON(items)
+}

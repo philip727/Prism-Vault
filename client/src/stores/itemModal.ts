@@ -8,3 +8,13 @@ export const [itemShownOnModal, setItemShownOnModal] = createSignal(newItem());
 export const updateItemDetailsOnModal = (item: Item) => {
     setItemShownOnModal(item);
 }
+
+export const [totalPiecePlatinumCount, setTotalPiecePlatinumCount] = createSignal(0);
+
+export enum ModalPage {
+    STOCK = "STOCK",
+    ORDERS = "ORDERS",
+    DROPS = "DROPS",
+}
+
+export const [modalPage, setModalPage] = createSignal(ModalPage.STOCK)

@@ -1,5 +1,5 @@
 import { Motion } from "@motionone/solid";
-import { Component, Show } from "solid-js"
+import { Component } from "solid-js"
 import { showTooltip, tooltipText } from "./__tooltip/Manager"
 
 export const Tooltip: Component = () => {
@@ -16,15 +16,13 @@ export const Tooltip: Component = () => {
     }
 
     return (
-        <Show when={showTooltip()}>
-            <Motion.div
-                ref={tooltip}
-                class="absolute bg-[var(--c1)] px-2 z-[9999]"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-            >
-                <h1 ref={text} class="text-base text-white font-medium m-auto text-center max-w-[18rem]">{tooltipText()}</h1>
-            </Motion.div>
-        </Show>
+        <Motion.div
+            ref={tooltip}
+            class="absolute bg-[var(--c1)] px-2 z-[9999]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+        >
+            <h1 ref={text} class="text-base text-white font-medium m-auto text-center max-w-[18rem]">{tooltipText()}</h1>
+        </Motion.div>
     )
 }
