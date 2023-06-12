@@ -1,12 +1,12 @@
 import { Motion } from "@motionone/solid"
-import { Component, createEffect, createSignal, Match, Show, Switch } from "solid-js"
-import { modalPage, setModalPage } from "../../../stores/itemModal";
+import { Component, createEffect, createSignal, Match, Switch } from "solid-js"
 import './TabButton.scss'
 
 type Props = {
     text: string,
     img: string,
-    page: ModalPage,
+    onClick: (e: MouseEvent & { currentTarget: HTMLButtonElement; target: Element; }) => void,
+    selected: boolean
 }
 
 const DEFAULT_BUTTON_WIDTH = 24;
@@ -23,6 +23,7 @@ export const TabButton: Component<Props> = (props) => {
             return
         }
 
+        // The total width
         updateWidth(localText.offsetWidth + DEFAULT_PADDING_WIDTH + DEFAULT_BUTTON_WIDTH)
     })
 
@@ -38,21 +39,21 @@ export const TabButton: Component<Props> = (props) => {
                 animate={{ width: "1.5rem" }}
                 hover={{ width: `${width()}px` }}
                 transition={{ duration: 0.3 }}
-                onClick={() => setModalPage(props.page)}
+                onClick={props.onClick}
             >
                 <img class="h-4 w-4" src={props.img} />
-                <p ref={(el) => setTextElement(el)} class="text-white font-light text-left ml-1">
+                <p ref={(el) => setTextElement(el)} class="text-white font-light text-left ml-1 whitespace-nowrap text-sm">
                     {props.text}
                 </p>
             </Motion.button>
         }>
-            <Match when={modalPage() == props.page}>
+            <Match when={props.selected}>
                 <Motion.button
                     class={`h-full w-6 bg-[var(--c2)] overflow-hidden flex flex-row justify-start items-center px-1`}
                     style={{ width: `${width()}px` }}
                 >
                     <img class="h-4 w-4" src={props.img} />
-                    <p ref={(el) => setTextElement(el)} class="text-white font-light text-left ml-1">
+                    <p ref={(el) => setTextElement(el)} class="text-white font-light text-left ml-1 text-sm">
                         {props.text}
                     </p>
                 </Motion.button>

@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api";
 import { createStore } from "solid-js/store";
-import { Component, Item, Order } from "../scripts/inventory";
+import { Component, getMarketQuery, Item, Order } from "../scripts/inventory";
 import unwrapPromise from "../scripts/utils/unwrapPromise";
 import { createInWindowNotification } from "../window/__notification/Manager";
 
@@ -54,13 +54,13 @@ const shouldUpdateQuantity = (uniqueName: string) => {
 }
 
 // Gets the platinum price of a single tradable item
-export const getSingleItemPlatinumPrice = async (item: Item) => {
+export const getItemPlatinumPrice = async (item: Item) => {
     if (!shouldUpdatePlatinum(item.uniqueName)) {
         return
     }
 
-    let marketQueryString = item.name.replaceAll(" ", "_").toLowerCase();
-    const { err, result } = await unwrapPromise<Order, String>(invoke("get_order", { itemName: marketQueryString }));
+    let marketQuery = getMarketQuery(item);
+    const { err, result } = await unwrapPromise<Order, string>(invoke("get_lowest_platinum_price", { itemName: marketQuery }));
     if (err || !result) {
         return;
     }
@@ -75,17 +75,8 @@ export const getComponentPlatinumPrice = async (item: Item, component: Component
         return
     }
 
-    let partMarketName = "";
-
-    // If it has a product category then it must be another set
-    if (typeof component.productCategory == "undefined") {
-        partMarketName = item.name + " " + component.name;
-    } else {
-        partMarketName = component.name + "_set";
-    }
-
-    let marketQueryString = partMarketName.replaceAll(" ", "_").toLowerCase();
-    let { err, result } = await unwrapPromise<Order, string>(invoke("get_order", { itemName: marketQueryString }));
+    let marketQuery = getMarketQuery(item, component);
+    let { err, result } = await unwrapPromise<Order, string>(invoke("get_lowest_platinum_price", { itemName: marketQuery }));
     if (err || !result) {
         return
     }
@@ -107,7 +98,7 @@ export const updateQuantityOfPart = async (uniqueName: string, quantity: number,
     setParts(uniqueName, "quantity", quantity);
 }
 
-export const grabQuantitiesFromComponents = async (uniqueNames: Array<string>) => {
+export const getItemQuantity = async (uniqueNames: Array<string>) => {
     let suitableComponents: string[] = []
     uniqueNames.forEach((uniqueName) => {
         if (shouldUpdateQuantity(uniqueName)) {

@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tauri::AppHandle;
 
-use crate::{errors, utils::grab_session_token, warframe::items::search_directly_for_item};
+use crate::{errors, utils::get_session_token, warframe::items::search_directly_for_item};
 
 #[derive(Serialize, Deserialize, Debug)]
 struct GetItemPayload {
@@ -17,7 +17,7 @@ pub async fn get_components(
     app_handle: AppHandle,
     components: Vec<String>,
 ) -> Result<Value, errors::Error> {
-    let key = grab_session_token(&app_handle)?;
+    let key = get_session_token(&app_handle)?;
 
     let payload = GetItemPayload {
         unique_names: components,
@@ -59,7 +59,7 @@ pub async fn get_components(
 
 #[tauri::command]
 pub async fn get_owned_items(app_handle: AppHandle) -> Result<Vec<Value>, errors::Error> {
-    let key = grab_session_token(&app_handle)?;
+    let key = get_session_token(&app_handle)?;
     let client = reqwest::Client::new();
     let request = client
         .get("http://127.0.0.1:8080/item/get-inventory")
@@ -88,7 +88,6 @@ pub async fn get_owned_items(app_handle: AppHandle) -> Result<Vec<Value>, errors
 
     let body = &response.text().await.unwrap();
 
-    println!("{:?}", body);
     let item_names = serde_json::from_str::<Vec<String>>(body).unwrap();
     let mut items: Vec<Value> = Vec::new();
     for names in item_names.iter() {

@@ -24,18 +24,6 @@ export const Tabs: Component<Props> = (props) => {
                         }}
                     />
                 </TooltipPrompter>
-                <TooltipPrompter prompt="Market">
-                    <Motion.img
-                        class="h-8 w-8"
-                        src="/dashboard/section-bar/market-logo.svg"
-                        hover={{ scale: 1.1 }}
-                        press={{ scale: 0.95 }}
-                        alt="Market Logo"
-                        onClick={() => {
-                            props.setView(DashboardViews.MARKET);
-                        }}
-                    />
-                </TooltipPrompter>
             </div>
         </div>
     )

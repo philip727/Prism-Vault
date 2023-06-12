@@ -6,7 +6,6 @@ import { isItemTradableOrHasTradableParts, Item } from "../../scripts/inventory"
 import unwrapPromise from "../../scripts/utils/unwrapPromise"
 import { searches, updateSearches } from "../../stores/search"
 import './Inventory.scss'
-import { Card } from "./__inventory/Card"
 import { PageButtons } from "./__inventory/PageButtons"
 import { ItemSearch } from "./__inventory/__views/ItemSearch"
 

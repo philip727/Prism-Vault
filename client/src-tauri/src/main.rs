@@ -6,10 +6,12 @@ mod warframe;
 use api::{user, collection};
 use tauri_plugin_store::StoreBuilder;
 use warframe::items;
+use dotenv::dotenv;
 mod errors;
 mod utils;
 
 fn main() {
+    dotenv().ok();
     tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::default().build())
         .setup(|app| {
@@ -21,7 +23,8 @@ fn main() {
             // Warframe Items 
             items::search_directly_for_item,
             items::search_query,
-            items::market::get_order,
+            items::market::get_orders,
+            items::market::get_lowest_platinum_price,
 
             // User 
             user::register::register_user,

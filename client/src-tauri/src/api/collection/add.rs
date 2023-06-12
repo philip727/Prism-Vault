@@ -4,7 +4,7 @@ use reqwest::{header::CONTENT_TYPE, StatusCode};
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 
-use crate::{errors, utils::grab_session_token};
+use crate::{errors, utils::get_session_token};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AddItemPayload {
@@ -32,7 +32,8 @@ pub async fn add_item(
         ));
     }
 
-    let key = grab_session_token(&app_handle)?;
+    // Grabs the session token from appdata
+    let key = get_session_token(&app_handle)?;
     let payload = AddItemPayload {
         unique_name,
         quantity,
