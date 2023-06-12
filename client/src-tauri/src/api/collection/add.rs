@@ -4,7 +4,7 @@ use reqwest::{header::CONTENT_TYPE, StatusCode};
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 
-use crate::{errors, utils::get_session_token};
+use crate::{errors, utils::{get_session_token, get_dotenv_var}};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AddItemPayload {
@@ -42,7 +42,7 @@ pub async fn add_item(
 
     let client = reqwest::Client::new();
     let request = client
-        .post("http://127.0.0.1:8080/item/add")
+        .post(format!("{}/item/add", get_dotenv_var("SERVER_URL")))
         .timeout(Duration::from_secs(10))
         .header(CONTENT_TYPE, "application/json")
         .header("Session-Token", key.to_string())

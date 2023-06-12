@@ -5,6 +5,7 @@ mod api;
 mod warframe;
 use api::{user, collection};
 use tauri_plugin_store::StoreBuilder;
+use utils::get_dotenv_var;
 use warframe::items;
 use dotenv::dotenv;
 mod errors;
@@ -15,7 +16,7 @@ fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::default().build())
         .setup(|app| {
-            StoreBuilder::new(app.handle(), "data/user.data".parse()?).build();
+            StoreBuilder::new(app.handle(), get_dotenv_var("USER_FILE_LOCAL").parse()?).build();
 
             Ok(())
         })

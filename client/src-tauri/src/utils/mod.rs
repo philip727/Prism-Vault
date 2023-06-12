@@ -10,7 +10,7 @@ use crate::errors;
 pub fn get_session_token(app_handle: &AppHandle) -> Result<String, errors::Error> {
     let app = app_handle;
     let stores = app.state::<StoreCollection<Wry>>();
-    let path = PathBuf::from("data/user.data");
+    let path = PathBuf::from(get_dotenv_var("USER_FILE_LOCAL"));
 
     let mut key: Value = Default::default();
 

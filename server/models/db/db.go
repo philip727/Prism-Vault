@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/philp727/warframe-app-server/utils"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -19,7 +20,7 @@ func (e *ExistsError) Error() string {
 
 // Connects to the database
 func Connect() (*gorm.DB, error) {
-    dsn := "root:secretpw@tcp(127.0.0.1:3306)/main"
+    dsn := utils.GetEnvVar("DATABASE_CONNECTION") 
     db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
     
     if err != nil {

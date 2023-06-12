@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::time::Duration;
 use reqwest::{header::CONTENT_TYPE, StatusCode};
 
-use crate::errors;
+use crate::{errors, utils::get_dotenv_var};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RegisterPayload {
@@ -67,7 +67,7 @@ pub async fn register_user(payload: RegisterPayload) -> Result<String, errors::E
 
     let client = reqwest::Client::new();
     let response = client
-        .post("http://127.0.0.1:8080/user/new")
+        .post(format!("{}/user/new", get_dotenv_var("SERVER_URL")))
         .timeout(Duration::from_secs(10))
         .header(CONTENT_TYPE, "application/json")
         .json(&payload)

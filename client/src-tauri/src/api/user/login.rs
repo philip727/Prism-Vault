@@ -68,7 +68,7 @@ pub async fn login_user(app_handle: AppHandle, payload: LoginPayload) -> Result<
 
     let app = &app_handle;
     let stores = app.state::<StoreCollection<Wry>>();
-    let path = PathBuf::from("data/user.data");
+    let path = PathBuf::from(get_dotenv_var("USER_FILE_LOCAL"));
 
     let json = serde_json::from_str::<LoginResponse>(&response.text().await.unwrap()).unwrap();
 
