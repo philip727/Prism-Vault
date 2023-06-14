@@ -1,6 +1,6 @@
 import { Component, Match, Show, Switch, For } from "solid-js"
-import { isItemWithoutComponents, itemHasTradableParts } from "../../../../scripts/inventory"
-import { itemDisplay } from "../../../../stores/itemModal"
+import { isItemWithoutComponents, itemHasTradableParts } from "../../../../../scripts/inventory"
+import { itemDisplay } from "../../../../../stores/itemModal"
 import { PartShowcase } from "./__stock/PartShowcase"
 import { SellShowcase } from "./__stock/SellShowcase"
 

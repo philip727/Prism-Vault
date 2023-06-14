@@ -1,11 +1,11 @@
 
 import { Component as SComponent, createEffect, createSignal, Show } from "solid-js"
-import { Loading } from "../../../../../assets/Loading"
-import { Component, getComponentPicture, Item } from "../../../../../scripts/inventory"
-import { setItemDisplay } from "../../../../../stores/itemModal"
-import { parts, updateQuantityOfPart } from "../../../../../stores/partCache"
-import TooltipPrompter from "../../../../../window/__tooltip/TooltipPrompter"
-import InputField from "../../../../inputs/InputField"
+import { Loading } from "../../../../../../assets/Loading"
+import { Component, getComponentPicture, Item } from "../../../../../../scripts/inventory"
+import { setItemDisplay } from "../../../../../../stores/itemModal"
+import { parts, updateQuantityOfPart } from "../../../../../../stores/partCache"
+import TooltipPrompter from "../../../../../../window/__tooltip/TooltipPrompter"
+import InputField from "../../../../../inputs/InputField"
 
 type Props = {
     item: Item,

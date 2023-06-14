@@ -1,9 +1,9 @@
 import { Motion } from "@motionone/solid"
 import { Component, createSignal, Show } from "solid-js"
-import { Order } from "../../../../../scripts/inventory"
-import { getColourFromStatus, OrderType } from "../../../../../scripts/orders"
-import { itemDisplay } from "../../../../../stores/itemModal"
-import TooltipPrompter from "../../../../../window/__tooltip/TooltipPrompter"
+import { Order } from "../../../../../../scripts/inventory"
+import { getColourFromStatus, OrderType } from "../../../../../../scripts/orders"
+import { itemDisplay } from "../../../../../../stores/itemModal"
+import TooltipPrompter from "../../../../../../window/__tooltip/TooltipPrompter"
 import '../Orders.scss'
 
 type Props = {
