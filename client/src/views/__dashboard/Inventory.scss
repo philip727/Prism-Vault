@@ -1,6 +1,4 @@
 .items-grid {
-    --min: 20ch;
-
     display: grid;
     gap: 2rem;
     grid-template-columns: repeat(3, 1fr);

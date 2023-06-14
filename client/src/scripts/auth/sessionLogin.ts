@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api";
-import { updateClient, UserDetails } from "../../store";
+import { updateClient, UserDetails } from "../../stores/client";
 import { createInWindowNotification } from "../../window/__notification/Manager";
 import unwrapPromise from "../utils/unwrapPromise";
 
@@ -25,6 +25,7 @@ export const loginWithSession = () => {
             return;
         }
 
+        console.log(result);
         updateClient(result);
         resolve(result);
     })

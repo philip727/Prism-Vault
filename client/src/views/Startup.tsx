@@ -2,7 +2,7 @@ import { Navigate } from "@solidjs/router";
 import { Component, Match, Switch } from "solid-js"
 import createTask from "../hooks/createTask";
 import { loginWithSession } from "../scripts/auth/sessionLogin";
-import { client } from "../store";
+import { client } from "../stores/client";
 import { Loading } from "./__startup/Loading";
 
 

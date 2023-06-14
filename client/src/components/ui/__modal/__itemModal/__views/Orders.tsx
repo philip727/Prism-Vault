@@ -1,19 +1,18 @@
 import { Component, createEffect, createSignal, For, Match, Show, Switch } from "solid-js"
-import { cleanComponentName, determineItemPicture, getMarketQuery, getStrictComponentPicture, isItemWithoutComponents, Order } from "../../../../scripts/inventory"
+import { cleanComponentName, determineItemPicture, getStrictComponentPicture, isItemWithoutComponents, Order } from "../../../../scripts/inventory"
 import { getOrdersFromType, OrderType } from "../../../../scripts/orders"
-import { itemShownOnModal } from "../../../../stores/itemModal"
-import { orderType, setOrderType } from "../../../../stores/orders"
+import { itemDisplay, setItemDisplay } from "../../../../stores/itemModal"
 import { MenuButton } from "../MenuButton"
 import { TabButton } from "../TabButton"
 import { OrderButton } from "./__orders/OrderButton"
 
 export const Orders: Component = () => {
-    const [currentComponent, setCurrentComponent] = createSignal(itemShownOnModal().uniqueName);
+    const [currentComponent, setCurrentComponent] = createSignal(itemDisplay.item.uniqueName);
     const [orderList, setOrderList] = createSignal<Order[]>([])
 
     createEffect(() => {
         currentComponent();
-        setOrderList(getOrdersFromType(orderType(), currentComponent()));
+        setOrderList(getOrdersFromType(itemDisplay.orderSettings.type, currentComponent()));
     })
 
     return (
@@ -24,11 +23,11 @@ export const Orders: Component = () => {
                         <ul class="flex flex-row justify-start w-full">
                             <TabButton
                                 text="Set"
-                                img={determineItemPicture(itemShownOnModal())}
-                                onClick={() => setCurrentComponent(itemShownOnModal().uniqueName)}
-                                selected={currentComponent() == itemShownOnModal().uniqueName}
+                                img={determineItemPicture(itemDisplay.item)}
+                                onClick={() => setCurrentComponent(itemDisplay.item.uniqueName)}
+                                selected={currentComponent() == itemDisplay.item.uniqueName}
                             />
-                            <For each={itemShownOnModal().components}>{(component) => (
+                            <For each={itemDisplay.item.components}>{(component) => (
                                 <Show when={component.tradable}>
                                     <TabButton
                                         text={cleanComponentName(component.name)}
@@ -45,33 +44,33 @@ export const Orders: Component = () => {
                             <MenuButton
                                 text="Sellers"
                                 img="dashboard/orders/order-type.svg"
-                                onClick={() => setOrderType(OrderType.SELLERS)}
-                                selected={orderType() == OrderType.SELLERS}
+                                onClick={() => setItemDisplay("orderSettings", "type", OrderType.SELLERS)}
+                                selected={itemDisplay.orderSettings.type == OrderType.SELLERS}
                             />
                             <MenuButton
                                 text="Buyers"
                                 img="dashboard/orders/order-type.svg"
-                                onClick={() => setOrderType(OrderType.BUYERS)}
-                                selected={orderType() == OrderType.BUYERS}
+                                onClick={() => setItemDisplay("orderSettings", "type", OrderType.BUYERS)}
+                                selected={itemDisplay.orderSettings.type == OrderType.BUYERS}
                             />
                         </ul>
                     </div>
                 </>
             }>
-                <Match when={isItemWithoutComponents(itemShownOnModal())}>
+                <Match when={isItemWithoutComponents(itemDisplay.item)}>
                     <div class="h-6 flex flex-row w-128">
                         <ul class="h-full flex flex-row justify-end w-full">
                             <MenuButton
                                 text="Sellers"
                                 img="dashboard/orders/order-type.svg"
-                                onClick={() => setOrderType(OrderType.SELLERS)}
-                                selected={orderType() == OrderType.SELLERS}
+                                onClick={() => setItemDisplay("orderSettings", "type", OrderType.SELLERS)}
+                                selected={itemDisplay.orderSettings.type == OrderType.SELLERS}
                             />
                             <MenuButton
                                 text="Buyers"
                                 img="dashboard/orders/order-type.svg"
-                                onClick={() => setOrderType(OrderType.BUYERS)}
-                                selected={orderType() == OrderType.BUYERS}
+                                onClick={() => setItemDisplay("orderSettings", "type", OrderType.BUYERS)}
+                                selected={itemDisplay.orderSettings.type == OrderType.BUYERS}
                             />
                         </ul>
                     </div>

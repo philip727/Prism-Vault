@@ -3,16 +3,16 @@ import { Outlet } from "@solidjs/router";
 import Toolbar from "../../window/Toolbar";
 import Notificationholder from "../../window/__notification/Holder";
 import { Tooltip } from "../../window/Tooltip";
-import { ItemModal } from "../ui/ItemModal";
-import { isItemModalOpen } from "../../stores/itemModal";
 import { showTooltip } from "../../window/__tooltip/Manager";
 import { notifications } from "../../window/__notification/Manager";
+import { modal } from "../../stores/modal";
+import { Modal } from "../ui/Modal";
 
 const RootLayout: Component = () => {
     return (
         <>
-            <Show when={isItemModalOpen()}>
-                <ItemModal />
+            <Show when={modal.open}>
+                <Modal /> 
             </Show>
             <Show when={showTooltip()}>
                 <Tooltip />

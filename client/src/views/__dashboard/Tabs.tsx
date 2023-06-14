@@ -9,22 +9,42 @@ type Props = {
 
 export const Tabs: Component<Props> = (props) => {
     return (
-        <div class="flex flex-row mt-6">
+        <nav class="flex flex-row mt-6">
             <div class="w-1/3 h-12 flex flex-row gap-6" />
-            <div class="w-1/3 h-16 flex flex-row justify-center items-center gap-6 pl-4">
+            <div class="w-1/3 h-16 flex flex-row justify-center items-center gap-6">
                 <TooltipPrompter prompt="Your Collection">
-                    <Motion.img
-                        class="h-8 w-8"
-                        src="/dashboard/section-bar/inventory-logo.svg"
+                    <Motion.button
                         hover={{ scale: 1.1 }}
                         press={{ scale: 0.95 }}
-                        alt="Part Collection Logo"
                         onClick={() => {
                             props.setView(DashboardViews.INVENTORY);
                         }}
-                    />
+                    >
+                        <img
+                            class="h-8 w-8"
+                            src="/dashboard/section-bar/inventory-logo.svg"
+                            alt="Part Collection Logo"
+                        />
+                    </Motion.button>
                 </TooltipPrompter>
             </div>
-        </div>
+            <div class="w-1/3 h-16 flex flex-row justify-end items-center gap-6 pr-6">
+                <TooltipPrompter prompt="Settings">
+                    <Motion.button
+                        hover={{ scale: 1.1 }}
+                        press={{ scale: 0.95 }}
+                        onClick={() => {
+                            props.setView(DashboardViews.SETTINGS);
+                        }}
+                    >
+                        <img
+                            class="h-8 w-8"
+                            src="/dashboard/section-bar/settings-logo.svg"
+                            alt="Part Collection Logo"
+                        />
+                    </Motion.button>
+                </TooltipPrompter>
+            </div>
+        </nav>
     )
 }

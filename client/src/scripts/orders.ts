@@ -1,4 +1,4 @@
-import { itemOrders } from "../stores/itemModal"
+import { itemDisplay } from "../stores/itemModal"
 import { Order } from "./inventory";
 
 export enum OrderType {
@@ -49,7 +49,7 @@ const orderByPlatinumAndStatus = (a: Order, b: Order): number => {
 
 export const getOrdersFromType = (orderType: OrderType, uniqueName: string): Order[] => {
     let sortedFromType: Order[] = [];
-    let items = itemOrders()[uniqueName]
+    let items = itemDisplay.orders[uniqueName]
     if (typeof items == "undefined") {
         return sortedFromType;
     }

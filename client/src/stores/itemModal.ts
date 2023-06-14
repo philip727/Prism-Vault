@@ -1,27 +1,39 @@
 import { invoke } from "@tauri-apps/api";
-import { createSignal } from "solid-js";
-import { Component, getMarketQuery, Item, newItem, Order } from "../scripts/inventory";
+import { createStore } from "solid-js/store";
+import { Component, getMarketQuery, isItemWithoutComponents, Item, newItem, Order } from "../scripts/inventory";
+import { OrderType } from "../scripts/orders";
 import unwrapPromise from "../scripts/utils/unwrapPromise";
+import { getComponentPlatinumPrice, getItemPlatinumPrice, getItemQuantity, parts, setParts } from "./partCache";
 
-export const [isItemModalOpen, setIsItemModalOpen] = createSignal(false);
-
-export const [itemShownOnModal, setItemShownOnModal] = createSignal(newItem());
-
-export const updateItemDetailsOnModal = (item: Item) => {
-    setItemShownOnModal(item);
-}
-
-export const [totalPiecePlatinumCount, setTotalPiecePlatinumCount] = createSignal(0);
-
-export enum ModalPage {
+export enum ItemDisplayPage {
     STOCK = "STOCK",
-    ORDERS = "ORDERS",
-    DROPS = "DROPS",
+        ORDERS = "ORDERS",
+        DROPS = "DROPS",
 }
 
-export const [modalPage, setModalPage] = createSignal(ModalPage.STOCK)
+type ItemDisplay = {
+    item: Item,
+    partPlatinumTotal: number,
+    page: ItemDisplayPage,
+    orders: { [key: string]: Array<Order> },
+    orderSettings: {
+        type: OrderType
+    }
+}
 
-export const [itemOrders, setItemOrders] = createSignal<{ [key: string]: Array<Order> }>({})
+export const [itemDisplay, setItemDisplay] = createStore<ItemDisplay>({
+    item: newItem(),
+    partPlatinumTotal: 0,
+    page: ItemDisplayPage.STOCK,
+    orders: {},
+    orderSettings: {
+        type: OrderType.SELLERS
+    }
+})
+
+export const updateItemDisplay = (item: Item) => {
+    setItemDisplay("item", item);
+}
 
 export const updateOrdersWithQueryString = (orders: Array<Order>, query: string): Array<Order> => {
     for (let i = 0; i < orders.length; i++) {
@@ -44,7 +56,7 @@ export const getItemOrderWithNoComponents = async (item: Item) => {
 
     order[item.uniqueName] = updateOrdersWithQueryString(result, marketQuery);
 
-    setItemOrders(order);
+    setItemDisplay("orders", order);
 }
 
 // Gets the order of each component on an item and its set
@@ -71,7 +83,7 @@ export const getItemOrdersWithComponents = async (item: Item) => {
         orders[component.uniqueName] = result;
     }
 
-    setItemOrders(orders);
+    setItemDisplay("orders", orders);
 }
 
 // Gets the order of a component
@@ -91,3 +103,54 @@ const getComponentOrder = async (item: Item, component: Component): Promise<Arra
         return resolve(result);
     })
 }
+
+export const setupItemForModalDisplay = () => {
+        // Sets up the item modal stock page
+        const item = itemDisplay.item;
+
+        // An item without components, like a syndicate weapon
+        if (isItemWithoutComponents(item)) {
+            if (item.tradable && typeof parts[item.uniqueName] == "undefined") {
+                setParts(item.uniqueName, { platinum: 0, quantity: 0, lastPlatinumUpdate: 0, lastQuantityUpdate: 0 })
+            }
+
+            getItemPlatinumPrice(item);
+            getItemQuantity([item.uniqueName]);
+            getItemOrderWithNoComponents(item);
+            return;
+        }
+
+        // Sets up the default values of a part
+        for (let i = 0; i < item.components.length; i++) {
+            const component = item.components[i];
+
+            // If we already have the part platinum price, then there is no reason to set it up again
+            if (!component.tradable || typeof parts[component.uniqueName] != "undefined") {
+                continue;
+            }
+
+            setParts(component.uniqueName, { platinum: 0, quantity: 0, lastPlatinumUpdate: 0, lastQuantityUpdate: 0 });
+        }
+
+        // Gets the platinum price of each components
+        for (let i = 0; i < item.components.length; i++) {
+            const component = item.components[i];
+
+            getComponentPlatinumPrice(item, component);
+        }
+
+        // Gets all the unique component names
+        const uniqueNames: string[] = []
+        for (let i = 0; i < item.components.length; i++) {
+            const component = item.components[i];
+            if (component.tradable) {
+                uniqueNames.push(component.uniqueName);
+            }
+        }
+
+        getItemQuantity(uniqueNames);
+        getItemOrdersWithComponents(item);
+
+        // Sets the total piece plat count which is calculated afterwards
+        setItemDisplay("partPlatinumTotal", 0);
+    }

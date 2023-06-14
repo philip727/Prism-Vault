@@ -2,7 +2,7 @@ import { Motion } from "@motionone/solid"
 import { Component, createSignal, Show } from "solid-js"
 import { Order } from "../../../../../scripts/inventory"
 import { getColourFromStatus, OrderType } from "../../../../../scripts/orders"
-import { orderType } from "../../../../../stores/orders"
+import { itemDisplay } from "../../../../../stores/itemModal"
 import TooltipPrompter from "../../../../../window/__tooltip/TooltipPrompter"
 import '../Orders.scss'
 
@@ -15,13 +15,13 @@ export const OrderButton: Component<Props> = (props) => {
     const colour = getColourFromStatus(props.order.user.status)
     const [hovering, setHovering] = createSignal(false);
     const itemName = props.order.query?.replaceAll("_", " ").replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase());
-    const action = orderType() == OrderType.SELLERS ? "buy" : "sell";
+    const action = itemDisplay.orderSettings.type == OrderType.SELLERS ? "buy" : "sell";
     const clipboardMessage = `/w ${props.order.user.ingameName} Hi! I want to ${action}: "${itemName}" for ${props.order.platinum} platinum. (warframe.market)`;
 
     return (
         <Motion.li
             class={`w-full h-9 bg-[var(--c3)] flex flex-row ${props.index > 0 ? "mt-[2px]" : ""} relative`}
-            hover={{ height: "asdasd" }}
+            hover={{ height: "2.25rem" }}
             onHoverStart={() => {
                 setHovering(true);
             }}

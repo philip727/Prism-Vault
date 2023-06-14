@@ -1,32 +1,34 @@
-import { Component, createEffect, createSignal, Show } from "solid-js"
+
+import { Component as SComponent, createEffect, createSignal, Show } from "solid-js"
 import { Loading } from "../../../../../assets/Loading"
-import { Item } from "../../../../../scripts/inventory"
-import { setTotalPiecePlatinumCount } from "../../../../../stores/itemModal"
+import { Component, getComponentPicture, Item } from "../../../../../scripts/inventory"
+import { setItemDisplay } from "../../../../../stores/itemModal"
 import { parts, updateQuantityOfPart } from "../../../../../stores/partCache"
 import TooltipPrompter from "../../../../../window/__tooltip/TooltipPrompter"
 import InputField from "../../../../inputs/InputField"
 
 type Props = {
-    item: Item
+    item: Item,
+    component: Component,
 }
 
-export const SellShowcase: Component<Props> = (props) => {
+export const PartShowcase: SComponent<Props> = (props) => {
     const [platinum, setPlatinum] = createSignal(0);
     let previousTotal = 0;
     let inputField!: HTMLInputElement;
 
     createEffect(() => {
-        if (typeof parts[props.item.uniqueName] == "undefined") {
+        if (typeof parts[props.component.uniqueName] == "undefined") {
             return;
         }
 
-        setPlatinum(parts[props.item.uniqueName].platinum);
-        inputField.value = `${parts[props.item.uniqueName].quantity}`;
+        setPlatinum(parts[props.component.uniqueName].platinum)
+        inputField.value = `${parts[props.component.uniqueName].quantity}`;
     })
 
     createEffect(() => {
-        let totalPlatinum = platinum() * parts[props.item.uniqueName].quantity;
-        setTotalPiecePlatinumCount(prev => (prev + totalPlatinum) - previousTotal);
+        let totalPlatinum = platinum() * parts[props.component.uniqueName].quantity;
+        setItemDisplay("partPlatinumTotal", prev => (prev + totalPlatinum) - previousTotal);
         previousTotal = totalPlatinum;
     })
 
@@ -37,17 +39,18 @@ export const SellShowcase: Component<Props> = (props) => {
                     ref={inputField}
                     value="0"
                     type="number"
-                    class="!w-16 !h-8"
+                    class="!w-16 !h-8 text-sm"
                     onChange={(e) => {
                         if (!e.currentTarget.value) {
-                            return; 
-                        } 
+                            return;
+                        }
 
-                        updateQuantityOfPart(props.item.uniqueName, parseInt(e.currentTarget.value, 10), props.item.name);
+                        updateQuantityOfPart(props.component.uniqueName, parseInt(e.currentTarget.value, 10), props.item.name);
                     }}
                 />
             </TooltipPrompter>
-            <p class="ml-2 text-white text-sm font-light w-60">x1 Sell Price</p>
+            <img class="h-7 w-7 ml-2" src={getComponentPicture(props.item, props.component)} />
+            <p class="ml-2 text-white text-sm  font-light w-72">{props.component.name}</p>
             <div class="w-full h-full flex flex-row justify-end items-center">
                 <Show when={platinum() != 0}
                     fallback={<Loading width="32" height="32" />}

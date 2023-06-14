@@ -1,9 +1,11 @@
+import { Motion } from "@motionone/solid"
 import { invoke } from "@tauri-apps/api"
-import { Component as SComponent, createSignal, For, Match, onMount, Show, Switch } from "solid-js"
+import { Component as SComponent, createEffect, createSignal, Match, onMount, Show, Switch } from "solid-js"
 import Logo from "../../assets/Logo"
 import InputField from "../../components/inputs/InputField"
 import { isItemTradableOrHasTradableParts, Item } from "../../scripts/inventory"
 import unwrapPromise from "../../scripts/utils/unwrapPromise"
+import { itemDisplay, setItemDisplay } from "../../stores/itemModal"
 import { searches, updateSearches } from "../../stores/search"
 import './Inventory.scss'
 import { PageButtons } from "./__inventory/PageButtons"
@@ -14,7 +16,6 @@ export const Inventory: SComponent = () => {
     let searchBar!: HTMLInputElement;
     const [currentError, setCurrentError] = createSignal<null | string>(null);
 
-
     // Handles the search when we start to input
     const handleChange = async (e: KeyboardEvent & { currentTarget: HTMLInputElement; target: Element; }) => {
         setCurrentError(null);
@@ -22,7 +23,7 @@ export const Inventory: SComponent = () => {
 
         // If the search is empty then don't search for anything
         if (e.currentTarget.value.length == 0) {
-            grabYourItems();
+            getUserItems();
             return;
         }
 
@@ -39,11 +40,20 @@ export const Inventory: SComponent = () => {
 
     // Gets the items we have already got some of
     onMount(() => {
-        grabYourItems();
+        getUserItems();
+    })
+
+    createEffect(() => {
+        itemDisplay.page // dependency
+        setItemDisplay("partPlatinumTotal", 0);
     })
 
     return (
-        <article>
+        <Motion.article
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+        >
             <div class="w-screen flex flex-row justify-center">
                 <div class="w-1/3" />
                 <div class="w-1/3 flex flex-row justify-center">
@@ -90,7 +100,7 @@ export const Inventory: SComponent = () => {
                     <PageButtons />
                 </Show>
             </div>
-        </article>
+        </Motion.article>
     )
 }
 
@@ -111,7 +121,7 @@ const clearItemArray = (arr: Array<Item>) => {
     return newArr;
 }
 
-const grabYourItems = async () => {
+const getUserItems = async () => {
     const { err, result } = await unwrapPromise<Array<Item>, string>(invoke("get_owned_items"));
 
     if (err || !result) return;

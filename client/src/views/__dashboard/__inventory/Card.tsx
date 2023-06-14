@@ -1,7 +1,8 @@
 import { Motion } from "@motionone/solid"
 import { Component } from "solid-js"
-import { cleanWikiaThumbnail, determineItemPicture, Item, ProductCategory } from "../../../scripts/inventory"
-import { setIsItemModalOpen, updateItemDetailsOnModal } from "../../../stores/itemModal"
+import { determineItemPicture, Item, ProductCategory } from "../../../scripts/inventory"
+import { setItemDisplay, setupItemForModalDisplay, } from "../../../stores/itemModal"
+import { ModalDisplay, setModal, updateOnModalOpen } from "../../../stores/modal"
 import TooltipPrompter from "../../../window/__tooltip/TooltipPrompter"
 
 type Props = {
@@ -17,8 +18,10 @@ export const Card: Component<Props> = (props) => {
                 press={{ scale: 0.95 }}
                 transition={{ duration: 0.3 }}
                 onClick={() => {
-                    updateItemDetailsOnModal(props.item);
-                    setIsItemModalOpen(true);
+                    setItemDisplay("item", props.item)
+                    updateOnModalOpen(setupItemForModalDisplay)
+                    setModal("display", ModalDisplay.ITEM)
+                    setModal("open", true);
                 }}
             >
                 <div class="w-56 bg-[var(--c3)] h-full flex justify-evenly items-center">

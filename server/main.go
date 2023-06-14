@@ -19,6 +19,7 @@ func main() {
 	}
 	app := fiber.New()
 
+    // Rate limiter
 	app.Use(limiter.New(limiter.Config{
 		Next: func(c *fiber.Ctx) bool {
 			return c.IP() == "127.0.0.1"
