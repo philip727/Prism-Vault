@@ -13,7 +13,7 @@ pub struct RegisterPayload {
     pub cpassword: String,
 }
 
-fn is_password_strong(password: &str) -> bool {
+pub fn is_password_strong(password: &str) -> bool {
     let uppercase_re = Regex::new(r"[A-Z]+").unwrap();
     let lowercase_re = Regex::new(r"[a-z]+").unwrap();
     let number_re = Regex::new(r"\d+").unwrap();
@@ -79,7 +79,6 @@ pub async fn register_user(payload: RegisterPayload) -> Result<String, errors::E
     };
 
     let resp = response.unwrap();
-
     let status = resp.status();
 
     // Internal error logs

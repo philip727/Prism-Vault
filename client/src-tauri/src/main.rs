@@ -3,13 +3,14 @@
 
 mod api;
 mod warframe;
-use api::{user, collection};
+mod errors;
+mod utils;
+
+use dotenv::dotenv;
+use api::{user, collection, account};
 use tauri_plugin_store::StoreBuilder;
 use utils::get_dotenv_var;
 use warframe::items;
-use dotenv::dotenv;
-mod errors;
-mod utils;
 
 fn main() {
     dotenv().ok();
@@ -31,11 +32,15 @@ fn main() {
             user::register::register_user,
             user::login::login_user,
             user::login::login_with_session,
+            user::logout::logout_user,
 
             // Collection
             collection::add::add_item,
             collection::get::get_components,
             collection::get::get_owned_items,
+
+            // Account
+            account::update_password
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

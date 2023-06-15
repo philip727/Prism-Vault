@@ -8,48 +8,48 @@ import (
 )
 
 // Hashes the password using bcrypt
-func hashPassword(pw string) (string, error) {
+func HashPassword(pw string) (string, error) {
     bytes, err := bcrypt.GenerateFromPassword([]byte(pw), 12)
     return string(bytes), err
 }
 
 // Interacts with the database to create a user
-func InsertUser(dbc *gorm.DB, nu types.NewUserPayload) error {
+func InsertUser(dbc *gorm.DB, p types.NewUserPayload) error {
     
-	if !IsUsername(nu.Username) {
+	if !IsUsername(p.Username) {
 		return &PayloadError{Msg: "Invalid username"}
 	}
 
-	if !IsEmail(nu.Email) {
+	if !IsEmail(p.Email) {
 		return &PayloadError{Msg: "Invalid email"}
 	}
 
-	if nu.Password != nu.CPassword {
+	if p.Password != p.CPassword {
 		return &PayloadError{Msg: "Passwords do not match"}
 	}
 
-	if !IsPasswordStrong(nu.Password) || !IsPasswordStrong(nu.CPassword) {
+	if !IsPasswordStrong(p.Password) || !IsPasswordStrong(p.CPassword) {
 		return &PayloadError{Msg: "Password does not meet the criteria"}
 	}
 
-    err := db.ColumnContains("users", "username", nu.Username, dbc)
+    err := db.ColumnContains("users", "username", p.Username, dbc)
     if err != nil {
         return err
     }
 
-    err = db.ColumnContains("users", "email", nu.Email, dbc)
+    err = db.ColumnContains("users", "email", p.Email, dbc)
     if err != nil {
         return err
     }
 
-    hash, err := hashPassword(nu.Password);
+    hash, err := HashPassword(p.Password);
     if err != nil {
         return err
     }
 
     result := dbc.Table("users").Omit("id").Create(&db.User{
-        Username: nu.Username,
-        Email: nu.Email,
+        Username: p.Username,
+        Email: p.Email,
         Password: hash,
     })
 

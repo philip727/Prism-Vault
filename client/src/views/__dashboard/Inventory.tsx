@@ -71,7 +71,7 @@ export const Inventory: SComponent = () => {
                 <Switch
                     fallback={
                         <>
-                            <h1 class="text-white text-2xl font-semibold w-full text-center mt-8">Your Items</h1>
+                            <h1 class="text-4xl text-white text-center font-bold tracking-wider mt-8">Your items</h1>
                             <ItemSearch />
                         </>
                     }

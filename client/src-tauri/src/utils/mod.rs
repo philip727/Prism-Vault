@@ -43,6 +43,7 @@ pub fn get_dotenv_var(var_name: &str) -> String {
     }
 
     let full_var_name = var_name.to_string() + var_extensions;
-    let env_var = std::env::var(var_name).expect(&format!("{} must be set.", full_var_name));
+
+    let env_var = std::env::var::<&str>(full_var_name.as_ref()).expect(&format!("{} must be set.", full_var_name));
     env_var
 }

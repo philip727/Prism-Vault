@@ -1,6 +1,7 @@
 import { Component, Match, onMount, Switch } from "solid-js"
 import { modal, ModalDisplay, onModalOpen, setModal } from "../../stores/modal";
 import { ItemModal } from "./__modal/ItemModal";
+import { PasswordChangeModal } from "./__modal/PasswordChangeModal";
 
 export const Modal: Component = () => {
     onMount(() => {
@@ -24,6 +25,9 @@ export const Modal: Component = () => {
                 <Switch>
                     <Match when={modal.display == ModalDisplay.ITEM}>
                         <ItemModal />
+                    </Match>
+                    <Match when={modal.display == ModalDisplay.PASSWORDCHANGE}>
+                        <PasswordChangeModal />
                     </Match>
                 </Switch>
             </div>

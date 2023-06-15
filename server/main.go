@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/joho/godotenv"
 	"github.com/philp727/warframe-app-server/models/db"
+	"github.com/philp727/warframe-app-server/routes/account"
 	"github.com/philp727/warframe-app-server/routes/item"
 	"github.com/philp727/warframe-app-server/routes/user"
 )
@@ -38,6 +39,7 @@ func main() {
 
 	user.CreateRoute(app, database)
 	item.CreateRoute(app, database)
+    account.CreateRoute(app, database)
 
 	log.Fatal(app.Listen(":8080"))
 }

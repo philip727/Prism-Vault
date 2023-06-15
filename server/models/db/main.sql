@@ -30,4 +30,4 @@ CREATE TABLE components (
             ON DELETE CASCADE
 );
 
-SELECT * FROM components;
+SELECT * FROM users;
