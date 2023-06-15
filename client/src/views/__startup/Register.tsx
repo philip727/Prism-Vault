@@ -55,10 +55,51 @@ const Register: Component = () => {
                     register();
                 }}
             >
-                <InputField name="username" type="text" placeholder="username" onChange={handleChange} />
-                <InputField name="email" type="email" placeholder="email" onChange={handleChange} />
-                <InputField name="password" type="password" placeholder="password" onChange={handleChange} />
-                <InputField name="cpassword" type="password" placeholder="confirm password" onChange={handleChange} />
+                <InputField
+                    name="username"
+                    type="text"
+                    placeholder="username"
+                    onChange={handleChange}
+                    prompt={{
+                        text: [
+                            "Must be unique"
+                        ],
+                        enabled: true
+                    }}
+                />
+                <InputField
+                    name="email"
+                    type="email"
+                    placeholder="email"
+                    onChange={handleChange}
+                    prompt={{
+                        text: [
+                            "Must be unique"
+                        ],
+                        enabled: true
+                    }}
+                />
+                <InputField
+                    name="password"
+                    type="password"
+                    placeholder="password"
+                    onChange={handleChange}
+                    prompt={{
+                        text: [
+                            "Must contain at least one uppercase character",
+                            "Must contain at least one lowercase character",
+                            "Must contain at least one number",
+                            "Must contain at least one of the lowing special characters: @#$%^&*()_+~=\-?<>{}\[\]|\\\/"
+                        ],
+                        enabled: true
+                    }}
+                />
+                <InputField
+                    name="cpassword"
+                    type="password"
+                    placeholder="confirm password"
+                    onChange={handleChange}
+                />
                 <div class="flex flex-row w-72 items-center justify-between">
                     <Button colourType={ButtonType.STANDOUT} type="submit">
                         <p class="text-white">Register</p>

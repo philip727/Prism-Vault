@@ -6,10 +6,11 @@ use tauri_plugin_store::{with_store, StoreCollection};
 
 use crate::errors;
 
-pub fn grab_session_token(app_handle: &AppHandle) -> Result<String, errors::Error> {
+// Grabs the session token from appdata
+pub fn get_session_token(app_handle: &AppHandle) -> Result<String, errors::Error> {
     let app = app_handle;
     let stores = app.state::<StoreCollection<Wry>>();
-    let path = PathBuf::from("data/user.data");
+    let path = PathBuf::from(get_dotenv_var("USER_FILE_LOCAL"));
 
     let mut key: Value = Default::default();
 
@@ -32,4 +33,17 @@ pub fn grab_session_token(app_handle: &AppHandle) -> Result<String, errors::Erro
     }
 
     Ok(key.to_string())
+}
+
+pub fn get_dotenv_var(var_name: &str) -> String {
+    let is_in_producation = std::env::var("PRODUCTION").is_ok();
+    let mut var_extensions = "";
+    if is_in_producation {
+        var_extensions = "_PRODUCTION"
+    }
+
+    let full_var_name = var_name.to_string() + var_extensions;
+
+    let env_var = std::env::var::<&str>(full_var_name.as_ref()).expect(&format!("{} must be set.", full_var_name));
+    env_var
 }

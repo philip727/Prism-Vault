@@ -1,0 +1,15 @@
+.description-scrollbar::-webkit-scrollbar {
+    background: var(--c4);
+    width: 6px;
+}
+
+.description-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--c2);
+    border-radius: 2rem;
+}
+
+.description-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--c1);
+    border-radius: 2rem;
+}
+

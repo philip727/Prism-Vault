@@ -1,0 +1,11 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M64 113.194C91.1688 113.194 113.194 91.1688 113.194 64C113.194 36.8312 91.1688 14.8065 64 14.8065C36.8312 14.8065 14.8065 36.8312 14.8065 64C14.8065 91.1688 36.8312 113.194 64 113.194ZM64 100.075C83.9238 100.075 100.075 83.9238 100.075 64C100.075 44.0762 83.9238 27.9247 64 27.9247C44.0762 27.9247 27.9247 44.0762 27.9247 64C27.9247 83.9238 44.0762 100.075 64 100.075Z" fill="white"/>
+<rect x="53" y="3" width="23" height="24" rx="3" fill="white"/>
+<rect x="84.3333" y="26.256" width="23.6129" height="23.6129" rx="3" transform="rotate(-45 84.3333 26.256)" fill="white"/>
+<rect x="84.3333" y="101.03" width="23.6129" height="23.6129" rx="3" transform="rotate(-45 84.3333 101.03)" fill="white"/>
+<rect x="9.55914" y="26.256" width="23.6129" height="23.6129" rx="3" transform="rotate(-45 9.55914 26.256)" fill="white"/>
+<rect x="9.55914" y="101.03" width="23.6129" height="23.6129" rx="3" transform="rotate(-45 9.55914 101.03)" fill="white"/>
+<rect x="3" y="52" width="24" height="23" rx="3" fill="white"/>
+<rect x="53" y="101" width="23" height="24" rx="3" fill="white"/>
+<rect x="101" y="52" width="24" height="23" rx="3" fill="white"/>
+</svg>

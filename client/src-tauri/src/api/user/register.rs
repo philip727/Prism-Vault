@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::time::Duration;
 use reqwest::{header::CONTENT_TYPE, StatusCode};
 
-use crate::errors;
+use crate::{errors, utils::get_dotenv_var};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RegisterPayload {
@@ -13,7 +13,7 @@ pub struct RegisterPayload {
     pub cpassword: String,
 }
 
-fn is_password_strong(password: &str) -> bool {
+pub fn is_password_strong(password: &str) -> bool {
     let uppercase_re = Regex::new(r"[A-Z]+").unwrap();
     let lowercase_re = Regex::new(r"[a-z]+").unwrap();
     let number_re = Regex::new(r"\d+").unwrap();
@@ -67,7 +67,7 @@ pub async fn register_user(payload: RegisterPayload) -> Result<String, errors::E
 
     let client = reqwest::Client::new();
     let response = client
-        .post("http://127.0.0.1:8080/user/new")
+        .post(format!("{}/user/new", get_dotenv_var("SERVER_URL")))
         .timeout(Duration::from_secs(10))
         .header(CONTENT_TYPE, "application/json")
         .json(&payload)
@@ -79,7 +79,6 @@ pub async fn register_user(payload: RegisterPayload) -> Result<String, errors::E
     };
 
     let resp = response.unwrap();
-
     let status = resp.status();
 
     // Internal error logs

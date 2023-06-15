@@ -13,7 +13,7 @@ import (
 )
 
 // Compares a string to a hash to see if they match
-func comparePasswordToHash(pw string, h string) bool {
+func ComparePasswordToHash(pw string, h string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(h), []byte(pw))
 	return err == nil
 }
@@ -109,7 +109,7 @@ func LoginWithPayload(lp types.LoginPayload, dbc *gorm.DB) (LoginReturn, error) 
 		user = searchUserByCol(lp.Identifier, "username", dbc)
 	}
 
-	if !comparePasswordToHash(lp.Password, user.Password) {
+	if !ComparePasswordToHash(lp.Password, user.Password) {
 		return LoginReturn{}, &UnauthorizedError{Msg: "The password given is incorrect"}
 	}
 

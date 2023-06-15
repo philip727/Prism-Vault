@@ -4,7 +4,6 @@ export enum ProductCategory {
     ARCANE = "Arcanes"
 }
 
-
 export type Item = {
     name: string,
     description: string,
@@ -58,9 +57,21 @@ export type Drop = {
 }
 
 export type Order = {
-    quanity: number,
+    quantity: number,
     orderType: string,
-    platinum: number
+    platinum: number,
+    user: User,
+    platform: string,
+    id: string,
+    query?: string,
+    [key: string]: any,
+}
+
+export type User = {
+    status: string,
+    reputation: number,
+    region: string,
+    ingameName: string,
 }
 
 // Check if the item has tradable parts
@@ -92,7 +103,11 @@ export const getComponentPicture = (item: Item, component: Component): string =>
         default:
             return `https://cdn.warframestat.us/img/${component.imageName}`
     }
+}
 
+// Gets the component picture no matter what it is, it uses the warframe market blue print picture
+export const getStrictComponentPicture = (component: Component): string => {
+    return `https://cdn.warframestat.us/img/${component.imageName}`
 }
 
 // Gets the picture of the item, the wikia thumbnails are better for mods
@@ -107,7 +122,7 @@ export const determineItemPicture = (item: Item | Component): string => {
     return `https://cdn.warframestat.us/img/${item.imageName}`
 }
 
-    // Cleans the wikiathumbnail
+// Cleans the wikiathumbnail
 export const cleanWikiaThumbnail = (url: string): string => {
     if (typeof url == "undefined") {
         return "./logos/wf-comp-logo.svg"
@@ -133,4 +148,30 @@ export const isItemWithoutComponents = (item: Item): boolean => {
         typeof item.components == "undefined";
 }
 
+// Gets the search query for warframe market api
+export const getMarketQuery = (item: Item, component?: Component): string => {
+    // If we have a component, then we are trying to get a component order
+    if (typeof component != "undefined") {
+        let componentQueryString = "";
 
+        // If it has a product category then it must be another set
+        if (typeof component.productCategory == "undefined") {
+            componentQueryString = item.name + " " + component.name;
+        } else {
+            componentQueryString = component.name + "_set";
+        }
+        return componentQueryString.replaceAll(" ", "_").toLowerCase();
+    }
+
+    // Gets the query string of a component with no components
+    if (isItemWithoutComponents(item)) {
+        return item.name.replaceAll(" ", "_").toLowerCase();
+    }
+
+    return item.name.replaceAll(" ", "_").toLowerCase() + "_set";
+}
+
+// clean the component name
+export const cleanComponentName = (name: string) => {
+    return name.replace("Upper", "U").replace("Lower", "L"); 
+}

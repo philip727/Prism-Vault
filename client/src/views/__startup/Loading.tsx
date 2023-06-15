@@ -7,7 +7,7 @@ export const Loading: Component = () => {
     onMount(() => {
         id = setInterval(() => {
             if (dots() == 3) {
-                setDots(0);
+                setDots(1);
                 return;
             }
 

@@ -1,0 +1,12 @@
+.areas-grid {
+    display: grid;
+    justify-content: center;
+    gap: 2rem;
+    grid-template-columns: repeat(2, 24rem);
+}
+
+.area {
+    &>p {
+        margin-left: 0.3rem;
+    }
+}

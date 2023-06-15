@@ -8,10 +8,10 @@ import (
 	"gorm.io/gorm"
 )
 
-func AddItem(uid uint32, itemp types.AddItemPayload, dbc *gorm.DB) error {
-	component := db.Component{UserId: uint32(uid), UniqueName: itemp.UniqueName, Quantity: itemp.Quantity, ItemName: itemp.ItemName }
+func AddItem(uid uint32, p types.AddItemPayload, dbc *gorm.DB) error {
+	component := db.Component{UserId: uint32(uid), UniqueName: p.UniqueName, Quantity: p.Quantity, ItemName: p.ItemName }
 
-	result := dbc.Table("components").Where("user_id = ? AND unique_name = ?", uid, itemp.UniqueName).Omit("id", "user_id", "unique_name").Updates(&component)
+	result := dbc.Table("components").Where("user_id = ? AND unique_name = ?", uid, p.UniqueName).Omit("id", "user_id", "unique_name").Updates(&component)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -23,10 +23,10 @@ func AddItem(uid uint32, itemp types.AddItemPayload, dbc *gorm.DB) error {
 	return nil
 }
 
-func GetComponents(uid uint32, itemp types.GetItemPayload, dbc *gorm.DB) (map[string]uint16, error) {
+func GetComponents(uid uint32, p types.GetItemPayload, dbc *gorm.DB) (map[string]uint16, error) {
     strings := make(map[string]uint16)
 
-	for _, c := range itemp.UniqueNames {
+	for _, c := range p.UniqueNames {
 		var component db.Component
 		result := dbc.Table("components").Where("user_id = ? AND unique_name = ?", uid, c).Take(&component)
 		if result.Error != nil {

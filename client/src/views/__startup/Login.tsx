@@ -6,7 +6,7 @@ import Logo from "../../assets/Logo"
 import Button, { ButtonType } from "../../components/inputs/Button"
 import InputField from "../../components/inputs/InputField"
 import unwrapPromise from "../../scripts/utils/unwrapPromise"
-import { updateClient, UserDetails } from "../../store"
+import { updateClient, UserDetails } from "../../stores/client"
 import { createInWindowNotification } from "../../window/__notification/Manager"
 
 const Login: Component = () => {
@@ -39,6 +39,7 @@ const Login: Component = () => {
             })
             return;
         }
+
 
         createInWindowNotification({
             text: "Welcome Tenno!",

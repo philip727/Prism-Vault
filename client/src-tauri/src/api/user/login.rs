@@ -6,7 +6,7 @@ use std::{error, path::PathBuf, time::Duration};
 use tauri::{AppHandle, Manager, Wry};
 use tauri_plugin_store::{with_store, StoreCollection};
 
-use crate::{errors, utils::grab_session_token};
+use crate::{errors, utils::{get_session_token, get_dotenv_var}};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct LoginPayload {
@@ -41,7 +41,7 @@ impl error::Error for NoSessionTokenError {}
 pub async fn login_user(app_handle: AppHandle, payload: LoginPayload) -> Result<Value, errors::Error> {
     let client = reqwest::Client::new();
     let request = client
-        .post("http://127.0.0.1:8080/user/session")
+        .post(format!("{}/user/session", get_dotenv_var("SERVER_URL")))
         .timeout(Duration::from_secs(10))
         .header(CONTENT_TYPE, "application/json")
         .json(&payload)
@@ -68,7 +68,7 @@ pub async fn login_user(app_handle: AppHandle, payload: LoginPayload) -> Result<
 
     let app = &app_handle;
     let stores = app.state::<StoreCollection<Wry>>();
-    let path = PathBuf::from("data/user.data");
+    let path = PathBuf::from(get_dotenv_var("USER_FILE_LOCAL"));
 
     let json = serde_json::from_str::<LoginResponse>(&response.text().await.unwrap()).unwrap();
 
@@ -91,10 +91,10 @@ pub async fn login_user(app_handle: AppHandle, payload: LoginPayload) -> Result<
 // Tries to login with the session token provided
 #[tauri::command]
 pub async fn login_with_session(app_handle: AppHandle) -> Result<Value, errors::Error> {
-    let key = grab_session_token(&app_handle)?;
+    let key = get_session_token(&app_handle)?;
     let client = reqwest::Client::new();
     let request = client
-        .post("http://127.0.0.1:8080/user/verify")
+        .post(format!("{}/user/verify", get_dotenv_var("SERVER_URL")))
         .timeout(Duration::from_secs(10))
         .header(CONTENT_TYPE, "application/json")
         .header("Session-Token", key)

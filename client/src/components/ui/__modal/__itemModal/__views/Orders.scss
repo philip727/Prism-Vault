@@ -1,0 +1,14 @@
+.order-button-scrollbar::-webkit-scrollbar {
+    background: var(--c5);
+    width: 6px;
+}
+
+.order-button-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--c2);
+    border-radius: 2rem;
+}
+
+.order-button-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--c1);
+    border-radius: 2rem;
+}
